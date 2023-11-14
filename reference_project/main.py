@@ -10,8 +10,8 @@ pygame.init()
 size    = (800, 600)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
-scoreFont = pygame.font.Font(None, 30)
-healthFont = pygame.font.Font(None, 50)
+scoreFont = pygame.font.Font("reference_project/fonts/UpheavalPro.ttf", 30)
+healthFont = pygame.font.Font("reference_project/fonts/OmnicSans.ttf", 50)
 healthRender = healthFont.render('z', True, pygame.Color('red'))
 pygame.display.set_caption("Top Down")
 
@@ -93,7 +93,7 @@ def game_loop():
         process_mouse(mouse, hero)
         
         # Enemy spawning process
-        if lastEnemy < currentTime - 100 and len(enemies) < 100:
+        if lastEnemy < currentTime - 200 and len(enemies) < 50:
             spawnSide = random.random()
             if spawnSide < 0.25:
                 enemies.add(Enemy((0, random.randint(0, size[1]))))
