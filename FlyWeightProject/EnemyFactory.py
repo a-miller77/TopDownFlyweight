@@ -1,10 +1,11 @@
 import EnemyFlyweight
 import pygame
 
-class EnemyFactory():
-    self.__enemies__ = {
+class EnemyFactory:
+    __enemies = {
         'small': EnemyFlyweight('small', pygame.Surface([8, 8]), 'melee', 10, 10)
     }
+
     @staticmethod
-    def get(self, name: str):
-        return self.__enemies__.get(name)
+    def get(name: str):
+        return EnemyFactory.__enemies.get(name)
