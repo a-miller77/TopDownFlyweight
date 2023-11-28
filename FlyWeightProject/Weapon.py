@@ -60,11 +60,12 @@ class MachineGun(Weapon):
             self.lastShot = current_time
             theta = math.radians(random.random()*self.spread_arc - self.spread_arc/2)
             proj_dir = super().rotate_vector(direction, theta)   
-            user.projectiles.add(Projectile(user.pos,
-                                            super().normalize_vector(proj_dir),
-                                            speed=6, 
-                                            lifetime=5000,
-                                            color=(194, 54, 16)))
+            user.projectiles.add(Projectile(
+                user.pos,
+                super().normalize_vector(proj_dir),
+                speed=6, 
+                lifetime=5000,
+                color=(194, 54, 16)))
 class Rifle(Weapon):
     def __init__(self):
         super().__init__()
@@ -77,11 +78,13 @@ class Rifle(Weapon):
                 if pos != user.pos else (1, 1)
             self.lastShot = current_time
             proj_dir = super().rotate_vector(direction, 0)   
-            user.projectiles.add(Projectile(user.pos,
-                                            super().normalize_vector(proj_dir),
-                                            speed=6, 
-                                            lifetime=5000,
-                                            color=(194, 54, 16)))
+            user.projectiles.add(
+                Projectile(
+                    user.pos,
+                    super().normalize_vector(proj_dir),
+                    speed=6, 
+                    lifetime=5000,
+                    color=(194, 54, 16)))
         
                 
 class Melee(Weapon):
@@ -102,6 +105,7 @@ class Melee(Weapon):
 class MissileLauncher(Weapon):
     def __init__(self):
         super().__init__()
+        self.weapon_cooldown = 1000
         
     def attack(self, user, pos):
         current_time = pygame.time.get_ticks()
