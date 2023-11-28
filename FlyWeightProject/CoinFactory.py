@@ -1,7 +1,10 @@
-class CointFactory():
-    self.__coins__ = {
-        1, (3, pygame.Surface([8, 8]))
+import pygame
+import CoinFlyweight
+
+class CoinFactory():
+    coins__ = {
+        1 : CoinFlyweight(value = 1, image = (3, pygame.Surface([4, 4])))
         }
-        @staticmethod
-        def get(self, value: int):
-            return self.__Coins___.get(value)
+    @staticmethod
+    def get():
+        return CoinFactory.coins__.get(1)
