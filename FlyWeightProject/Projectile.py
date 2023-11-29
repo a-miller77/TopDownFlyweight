@@ -16,7 +16,6 @@ class Projectile(pygame.sprite.Sprite):
         self.speed = speed
         self.lifetime = lifetime
         self.createdAt = pygame.time.get_ticks()
-        #self.bloat = np.arange(9999999)
         
     def move(self, surfaceSize, tDelta):
         if pygame.time.get_ticks() > self.createdAt + self.lifetime:

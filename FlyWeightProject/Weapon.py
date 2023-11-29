@@ -1,7 +1,8 @@
-import pygame 
+import pygame
 import math
 import random
 from Projectile import Projectile
+
 
 class Weapon():
     def __init__(self):
@@ -66,12 +67,13 @@ class MachineGun(Weapon):
                 speed=6, 
                 lifetime=5000,
                 color=(194, 54, 16)))
+            
 class Rifle(Weapon):
     def __init__(self):
         super().__init__()
         self.weapon_cooldown = 300
         
-    def attack(self, user, pos):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
@@ -100,9 +102,7 @@ class Melee(Weapon):
                 pos[0] - user.pos[0], pos[1] - user.pos[1]
             ) if pos != user.pos else (1, 1)
             self.last_shot = current_time
-            proj_dir = super().rotate_vector(direction, 0)
             
-            # Check for collision with projectiles within melee range
             for sprite in all_sprites:
                 if (
                     isinstance(sprite, Projectile)
@@ -113,17 +113,14 @@ class Melee(Weapon):
                     )
                     <= self.melee_range
                 ):
-                    # Add code here to apply melee effect to the enemy projectile.
-                    # For example, you could remove the projectile or decrease its health.
                     sprite.kill()
-            
-        
+
 class MissileLauncher(Weapon):
     def __init__(self):
         super().__init__()
         self.weapon_cooldown = 800
         
-    def attack(self, user, pos):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.weapon_cooldown:
             direction = (
@@ -141,6 +138,26 @@ class MissileLauncher(Weapon):
             user.projectiles.add(bomb)
             bomb_group = pygame.sprite.Group(bomb)
             bomb.explode(user, bomb_group)
+
+class LandMine(Weapon):
+    def __init__(self):
+        super().__init__()
+        self.weapon_cooldown = 600
+        self.explosion_radius = 50
+        
+    def attack(self, user, pos, all_sprites):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_shot > self.weapon_cooldown:
+            self.last_shot = current_time
+            user.projectiles.add(
+                Bomb(
+                    user.pos,
+                    (0, 0),
+                    speed=0,
+                    lifetime=3000,
+                    color=(0, 255, 0)  # Blue color for bombs
+                )
+            
         
 class Bomb(Projectile):
     def __init__(self, pos, direction, speed, lifetime, color):
