@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import math
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, source, target, speed, lifetime, color):
@@ -16,7 +17,6 @@ class Projectile(pygame.sprite.Sprite):
         self.speed = speed
         self.lifetime = lifetime
         self.createdAt = pygame.time.get_ticks()
-        #self.bloat = np.arange(9999999)
         
     def move(self, surfaceSize, tDelta):
         if pygame.time.get_ticks() > self.createdAt + self.lifetime:
@@ -29,3 +29,24 @@ class Projectile(pygame.sprite.Sprite):
             self.kill()
     def render(self, surface):
         surface.blit(self.image, self.pos)
+
+class Bomb(Projectile):
+    def __init__(self, pos, direction, speed, lifetime, color):
+        super().__init__(pos, direction, speed, lifetime, color)
+        self.explosion_radius = 50
+
+    def explode(self, surface, all_sprites):
+        pygame.draw.circle(
+            surface, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.explosion_radius
+        )
+        for sprite in all_sprites:
+            if (
+                isinstance(sprite, Projectile)
+                and sprite != self
+                and math.sqrt(
+                    (self.pos[0] - sprite.pos[0]) ** 2
+                    + (self.pos[1] - sprite.pos[1]) ** 2
+                )
+                <= self.explosion_radius
+            ):
+                sprite.kill()
