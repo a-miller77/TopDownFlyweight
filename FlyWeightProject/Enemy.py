@@ -32,11 +32,11 @@ class EnemyFactory:
 
     @staticmethod
     def get(name: str):
-        return EnemyFactory.__enemies.get(name[0])
+        return EnemyFactory.__enemies.get(name)
     
     @staticmethod
     def get_random_enemy():
-        return EnemyFactory.get('small')
+        return 'small'
 
 class Enemy(pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
