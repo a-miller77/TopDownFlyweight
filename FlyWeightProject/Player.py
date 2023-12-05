@@ -7,6 +7,7 @@ def normalize_vector(vector):
         return [0, 0]    
     pythagoras = math.sqrt(vector[0]*vector[0] + vector[1]*vector[1])
     return (vector[0] / pythagoras, vector[1] / pythagoras)
+
 class Player( pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
     def __init__(self, pos: tuple[float, float],  weapon_name: str, screenSize):
@@ -54,3 +55,6 @@ class Player( pygame.sprite.Sprite):
         
     def render(self, surface):
         surface.blit(self.image, self.pos)
+
+    def add_to_static_projectiles(self, projectile):
+        Player.projectiles.add(projectile)
