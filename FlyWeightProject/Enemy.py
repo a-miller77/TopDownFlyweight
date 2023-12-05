@@ -1,8 +1,7 @@
 import pygame
 import math
 from Projectile import Projectile
-from Weapon import normalize_vector
-import WeaponFactory
+from Weapon import normalize_vector, WeaponFactory, Weapon
 
 class EnemyFlyweight:
     def __init__(self, name: str, image: pygame.Surface, weapon_name: str, speed: float, 
