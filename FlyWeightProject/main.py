@@ -12,8 +12,8 @@ pygame.init()
 size    = (800, 600)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
-scoreFont = pygame.font.Font("reference_project/fonts/UpheavalPro.ttf", 30)
-healthFont = pygame.font.Font("reference_project/fonts/OmnicSans.ttf", 50)
+scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
+healthFont = pygame.font.Font("../reference_project/fonts/OmnicSans.ttf", 50)
 healthRender = healthFont.render('z', True, pygame.Color('red'))
 pygame.display.set_caption("Top Down")
 
@@ -33,7 +33,8 @@ def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
     for enemy in melee_enemies:
         enemy.move(melee_enemies, player_pos = hero.sprite.rect.topleft, tDelta = timeDelta)
         damage = enemy.attack(hero.sprite.rect.topleft)
-        hero.sprite.collide(damage)
+        if (damage):
+            hero.sprite.collide(damage)
 
     for enemy in ranged_enemies:
         enemy.move(ranged_enemies, player_pos = hero.sprite.rect.topleft, tDelta = timeDelta)
