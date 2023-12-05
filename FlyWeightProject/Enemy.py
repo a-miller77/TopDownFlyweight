@@ -15,7 +15,9 @@ class EnemyFlyweight():
 
 class EnemyFactory:
     __enemies = {
-        'small': EnemyFlyweight('small', pygame.Surface([8, 8]), 'melee', 10, 10)
+        'small': EnemyFlyweight('small', pygame.Surface([8, 8]), 'melee', 10, 10),
+        'medium': None,
+        'large': None
     }
 
     @staticmethod

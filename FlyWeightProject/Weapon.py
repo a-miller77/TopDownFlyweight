@@ -93,27 +93,34 @@ class Melee(Weapon):
     def __init__(self):
         super().__init__()
         self.weapon_cooldown = 100
-        self.melee_range = 30  # Adjust the melee range as needed
+        self.melee_range = 10  # Adjust the melee range as needed
 
-    def attack(self, user, pos, all_sprites):
+    def attack(self, user, pos):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.weapon_cooldown:
-            direction = (
-                pos[0] - user.pos[0], pos[1] - user.pos[1]
-            ) if pos != user.pos else (1, 1)
+            # direction = (
+            #     pos[0] - user.pos[0], pos[1] - user.pos[1]
+            # ) if pos != user.pos else (1, 1)
+
             self.last_shot = current_time
+            distance_to_player = math.dist((user.pos[0] - pos[0]), (user.pos[1] - pos[0]))
+
+            if distance_to_player <= self.melee_range:
+                return user.damage #TODO
+            else:
+                return 0
             
-            for sprite in all_sprites:
-                if (
-                    isinstance(sprite, Projectile)
-                    and sprite != user
-                    and math.sqrt(
-                        (user.pos[0] - sprite.pos[0]) ** 2
-                        + (user.pos[1] - sprite.pos[1]) ** 2
-                    )
-                    <= self.melee_range
-                ):
-                    sprite.kill()
+            # for sprite in all_sprites:
+            #     if (
+            #         isinstance(sprite, Projectile)
+            #         and sprite != user
+            #         and math.sqrt(
+            #             (user.pos[0] - sprite.pos[0]) ** 2
+            #             + (user.pos[1] - sprite.pos[1]) ** 2
+            #         )
+            #         <= self.melee_range
+            #     ):
+            #         sprite.kill()
 
 class MissileLauncher(Weapon):
     def __init__(self):
