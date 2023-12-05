@@ -1,4 +1,6 @@
+from ast import Not
 import pygame
+import random
 import math
 from Projectile import Projectile
 from Weapon import WeaponFactory, Weapon
@@ -20,21 +22,36 @@ class EnemyFactory:
                                     pygame.image.load('./Images/smallEnemy.png'), 
                                     (100,100)
                                     ), 'melee', 10, 10),
+        'medium': EnemyFlyweight('medium',
+                                 pygame.transform.scale(
+                                     pygame.image.load('./Images/mediumEnemy.png'), 
+                                     (150,150)
+                                     ), 'melee', 8, 12),
+        'large': EnemyFlyweight('large', 
+                                pygame.transform.scale(
+                                    pygame.image.load('./Images/bigEnemy.png'),
+                                    (200,200)
+                                    ), 'shooter', 6,15)
     }
-
-    # _spawn_chace = {
-    #     'small'
-    #     'medium'
-    #     'large'
-    # }
 
     @staticmethod
     def get(name: str):
         return EnemyFactory.__enemies.get(name)
     
     @staticmethod
-    def get_random() -> str:
-        return 'small'
+    def get_random( small: float, medium : float, large : float):
+        verificaition = 1 - small - medium - large
+        while verificaition != 0.0:
+            print('You mush enter deciamls that add up to 1')
+            small = input("Small value")
+            medium = input('Medium value')
+            large = input('Large value')
+        ranNum = random.random()
+        if ranNum >= small:
+            return  'small'
+        elif ranNum >= medium: 
+            return 'medium'
+        return 'large'
 
 class Enemy(pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
@@ -43,7 +60,7 @@ class Enemy(pygame.sprite.Sprite):
         flyweight = EnemyFactory.get(name)
         self.image = flyweight.image
         self.rect = flyweight.rect
-        #self.radius = flyweight.radius
+        self.radius = flyweight.radius
         self.speed = flyweight.speed
         self.weapon = flyweight.weapon
 
@@ -56,12 +73,12 @@ class Enemy(pygame.sprite.Sprite):
     def move(self, enemies: pygame.sprite.Group, player_pos: tuple[float, float], tDelta: float):
         self.movement_vector = (player_pos[0] - self.pos[0],
                                player_pos[1] - self.pos[1])
-        self.movement_vector = Weapon.normalize_vector(self.movement_vector)
+        self.movement_vector = Weapon.normalize_vector(self.movementVector)
         self.pos[0] += self.movement_vector[0] * self.speed * tDelta
         self.pos[1] += self.movement_vector[1] * self.speed * tDelta
         
         # Collision test with other enemies
-        self.movement_vector = [0, 0]
+        self.movementVector = [0, 0]
         for sprite in enemies:
             if sprite is self:
                 continue
@@ -76,7 +93,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.topleft = self.pos
 
     def attack(self, target_pos):
-        self.weapon.attack(self, pos=target_pos, last_shot_time = self.last_shot_time)
+        self.weapon.attack(self, user=self, target_pos=target_pos, last_shot_time = self.last_shot_time)
         self.last_shot_time = pygame.time.get_ticks()
 
     def collide(self, damage):

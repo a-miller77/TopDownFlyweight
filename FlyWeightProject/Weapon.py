@@ -1,13 +1,10 @@
 import pygame
 import math
 import random
-import Projectile
-from Projectile import Bomb
-
+from Projectile import Projectile, Bomb
 class Weapon():
     def __init__(self):
-        pass
-        #self.last_shot_time = 0
+        self.last_shot = 0
     
     def attack(self, use, pos, all_sprites):
         pass
@@ -30,17 +27,17 @@ class Weapon():
 class Shotgun(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("./Images/shotgun.png"), (40,40))
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\shotgun.png"), (40,40))
         self.weapon_cooldown = 550
         self.spread_arc = 60
         self.projectilesCount = 6
         
-    def attack(self, user, pos, last_shot_time):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
         if current_time - self.lastShot > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
                 if pos != user.pos else (1, 1)
-            self.last_shot_time = current_time
+            self.last_shot = current_time
             arc_difference = self.spread_arc / (self.projectiles_count - 1)
             for proj in range(self.projectiles_count):
                 theta = math.radians(arc_difference*proj - self.spread_arc/2)
@@ -52,13 +49,13 @@ class Shotgun(Weapon):
 class MachineGun(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("./Images/machinegun.png"), (40,40))
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\machinegun.png"), (40,40))
         self.weapon_cooldown = 100
         self.spread_arc = 25
         
-    def attack(self, user, pos, last_shot_time):
+    def attack(self, user, pos):
         current_time = pygame.time.get_ticks()
-        if current_time - last_shot_time > self.weapon_cooldown:
+        if current_time - self.last_shot > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
                 if pos != user.pos else (1, 1)
             self.lastShot = current_time
@@ -74,12 +71,12 @@ class MachineGun(Weapon):
 class Rifle(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("./Images/rifle.png"), (40,40))
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\rifle.png"), (40,40))
         self.weapon_cooldown = 300
         
-    def attack(self, user, pos, last_shot_time):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
-        if current_time - last_shot_time > self.weapon_cooldown:
+        if current_time - self.last_shot > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
                 if pos != user.pos else (1, 1)
             self.lastShot = current_time
@@ -98,20 +95,19 @@ class Melee(Weapon):
         super().__init__()
         self.weapon_cooldown = 100
         self.melee_range = 10  # Adjust the melee range as needed
-        self.damage = 5
 
-    def attack(self, user, pos, last_shot_time):
+    def attack(self, user, pos):
         current_time = pygame.time.get_ticks()
-        if current_time - last_shot_time > self.weapon_cooldown:
+        if current_time - self.last_shot > self.weapon_cooldown:
             # direction = (
             #     pos[0] - user.pos[0], pos[1] - user.pos[1]
             # ) if pos != user.pos else (1, 1)
 
-            self.last_shot_time = current_time
+            self.last_shot = current_time
             distance_to_player = math.dist((user.pos[0] - pos[0]), (user.pos[1] - pos[0]))
 
             if distance_to_player <= self.melee_range:
-                return self.damage
+                return user.damage #TODO
             else:
                 return 0
             
@@ -130,16 +126,16 @@ class Melee(Weapon):
 class MissileLauncher(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("./Images/rocketLauncher.png"),(40,40))
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\rocketLauncher.png"),(40,40))
         self.weapon_cooldown = 800
         
-    def attack(self, user, pos, last_shot_time):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
-        if current_time - last_shot_time > self.weapon_cooldown:
+        if current_time - self.last_shot > self.weapon_cooldown:
             direction = (
                 pos[0] - user.pos[0], pos[1] - user.pos[1]
             ) if pos != user.pos else (1, 1)
-            self.last_shot_time = current_time
+            self.last_shot = current_time
             proj_dir = super().rotate_vector(direction, 0)
             bomb = Bomb(
                 user.pos,
@@ -158,10 +154,10 @@ class LandMine(Weapon):
         self.weapon_cooldown = 600
         self.explosion_radius = 50
         
-    def attack(self, user, pos, last_shot_time):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
-        if current_time - last_shot_time > self.weapon_cooldown:
-            self.last_shot_time = current_time
+        if current_time - self.last_shot > self.weapon_cooldown:
+            self.last_shot = current_time
             user.projectiles.add(
                 Bomb(
                     user.pos,
