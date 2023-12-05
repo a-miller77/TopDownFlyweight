@@ -4,7 +4,7 @@ import numpy as np
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, source, target, speed, lifetime, color):
         super().__init__()
-        self.image = pygame.Surface([4, 4])
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\projectile.png"), (5,5))
         self.image.set_colorkey(pygame.Color('black'))
         self.rect = self.image.get_rect(x=source[0], y=source[1])
         pygame.draw.circle(self.image, color,
