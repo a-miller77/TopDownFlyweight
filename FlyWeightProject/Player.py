@@ -15,7 +15,7 @@ class Player( pygame.sprite.Sprite):
         self.rect = self.image.get_rect(x=screenSize[0]//2,
                                         y=screenSize[1]//2)
         self.weapon = Weapon.get(weapon_name)
-        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\player.png"), (100, 100))
+        self.image = pygame.transform.scale(pygame.image.load("./Images/player.png"), (100, 100))
         self.pos  = list(pos)
         self.movement_vector = [0, 0]
         self.alive = True

@@ -4,7 +4,7 @@ class ProjectileFlyweight():
     def __init__(self, name: str, path: str, speed: float, lifetime: int, damage: int, pierce: int , image_size: tuple):
         self.damage = damage
         self.pierce = pierce   
-        self.image = pygame.transform.scale(pygame.image.load(f"FlyWeightProject/Images/{path}.png"), image_size)
+        self.image = pygame.transform.scale(pygame.image.load(f"./Images/{path}.png"), image_size)
         self.lifetime = lifetime
         self.name = name
         self.speed = speed
@@ -18,7 +18,6 @@ class ProjectileFactory:
         'bomb': ProjectileFlyweight(name='bomb', path='landmine', speed=0, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
         #'landmine': ProjectileFlyweight(name='landmine', path='bomb', speed=0, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
     }
-    image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\projectile.png"), (5,5))
 
     @staticmethod
     def get(name):
