@@ -7,23 +7,23 @@ def normalize_vector(vector):
         return [0, 0]    
     pythagoras = math.sqrt(vector[0]*vector[0] + vector[1]*vector[1])
     return (vector[0] / pythagoras, vector[1] / pythagoras)
-
-class Player(pygame.sprite.Sprite):
+class Player( pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
-    def __init__(self, pos: tuple[float, float], screen_size, weapon_name: str = 'machinegun'):
+    coins = pygame.sprite.Group()
+    def __init__(self, pos: tuple[float, float], screen_size, weapon_name: str = 'landmine'):
         super().__init__()
         self.weapon = WeaponFactory.get(weapon_name)
-        self.image = pygame.transform.scale(pygame.image.load(".\Images\player.png"), (100, 100))
-        self.rect = self.image.get_rect(x=screen_size[0]//2,
-                                        y=screen_size[1]//2)
+        self.image = pygame.transform.scale(pygame.image.load(".\Images\player.png"), (30, 30))
+        self.rect = self.image.get_rect()
         self.screen_size = screen_size
         self.pos = list(pos)
         self.movement_vector = [0, 0]
         self.alive = True
         self.health = 100
-        self.speed = 3
-        self.coins = None
+        self.speed = 1.5
+        self.collected_coins = 0
         self.last_shot_time = pygame.time.get_ticks()
+
 
     def move(self, tDelta):
         self.movement_vector = normalize_vector(self.movement_vector)
@@ -46,16 +46,18 @@ class Player(pygame.sprite.Sprite):
         self.rect.topleft = self.pos
         self.movement_vector = [0, 0]
 
+    def add_to_static_projectiles(self, proj):
+        print("added proj")
+        Player.projectiles.add(proj)
+
     def attack(self, target_pos):
         self.weapon.attack(self, target_pos, self.last_shot_time)
         self.last_shot_time = pygame.time.get_ticks()
     
     def collide(self, damage):
         self.health -= damage
+        print(f"Player has taken {damage} damage")
         return self.health < 0
         
     def render(self, surface):
         surface.blit(self.image, self.pos)
-
-    def add_to_static_projectiles(self, projectile):
-        Player.projectiles.add(projectile)
