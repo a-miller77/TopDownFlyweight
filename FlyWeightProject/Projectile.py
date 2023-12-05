@@ -1,32 +1,42 @@
 import pygame
 import numpy as np
+import math
 from Projectile import Projectile, Bomb
 
-class projectileFactory:
+
+class ProjectileFlyweight():
+    def __init__(self, name: str, image: pygame.Surface, speed: float, lifetime: int, damage: int, pierce: int):
+        self.damage = damage
+        self.pierce = pierce   
+        self.image = image
+        self.lifetime = lifetime
+        self.name = name
+        self.speed = speed
+        self.rect = image.get_rect()
+        
+
+class ProjectileFactory:
     projectiles = {
-        'bullet': Projectile(),
-        'PiercingBullet': Projectile(),
+        'bullet': ProjectileFlyweight(),
+        'PiercingBullet': ProjectileFlyweight(),
         'bomb': Bomb()
     }
     @staticmethod
     def get(name):
-        return projectileFactory.projectiles.get(name)    
+        return ProjectileFactory.projectiles.get(name)    
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, source, target, speed, lifetime, color, pierce=0, damage=1):
+    def __init__(self, name: str, source: tuple, target: tuple):
         super().__init__()
-        self.image = pygame.Surface([4, 4])
-        self.image.set_colorkey(pygame.Color('black'))
-        self.rect = self.image.get_rect(x=source[0], y=source[1])
-        pygame.draw.circle(self.image, color,
-                           (self.rect.width // 2, self.rect.height // 2),
-                           self.rect.width // 2)
-        
-        self.pos = [source[0], source[1]]
+        self.created_at = pygame.time.get_ticks()
         self.movementVector = [target[0], target[1]]
-        self.speed = speed
-        self.lifetime = lifetime
-        self.createdAt = pygame.time.get_ticks()
+        self.pos = [source[0], source[1]]
+        flyweight = ProjectileFactory.get(name)
+        self.image = flyweight.image
+        self.lifetime = flyweight.lifetime
+        self.pierce = flyweight.pierce
+        self.rect = flyweight.rect
+        self.speed = flyweight.speed        
         
     def move(self, surfaceSize, tDelta):
         if pygame.time.get_ticks() > self.createdAt + self.lifetime:
@@ -39,6 +49,7 @@ class Projectile(pygame.sprite.Sprite):
             self.kill()
     def render(self, surface):
         surface.blit(self.image, self.pos)
+        
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, source, target, speed, lifetime, color):
         super().__init__()
