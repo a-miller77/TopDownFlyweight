@@ -7,28 +7,27 @@ from Player import Player
 
 
 class ProjectileFlyweight():
-    def __init__(self, name: str, image: pygame.Surface, speed: float, lifetime: int, damage: int, pierce: int):
+    def __init__(self, name: str, path: str, speed: float, lifetime: int, damage: int, pierce: int , image_size: tuple):
         self.damage = damage
         self.pierce = pierce   
-        self.image = image
+        self.image = pygame.transform.scale(pygame.image.load(f"FlyWeightProject\Images\{path}.png"), image_size)
         self.lifetime = lifetime
         self.name = name
         self.speed = speed
-        self.rect = image.get_rect()
-        
+        self.rect = self.image.get_rect()      
 
 class ProjectileFactory:
-    projectiles = {
-        'bullet': ProjectileFlyweight('bullet',),
-        'PiercingBullet': ProjectileFlyweight(),
-        'explosion': ProjectileFlyweight(),
-        'bomb': Bomb()
+    __projectiles = {
+        'bullet': ProjectileFlyweight(name='bullet', path='projectile', speed=1, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
+        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', path='projectile', speed=1, lifetime=1000, damage=1, pierce=1, image_size=(5,5)),
+        'explosion': ProjectileFlyweight(name='explosion', path='explosion', speed=0, lifetime=100, damage=1, pierce=0, image_size=(50,50)),
+        'bomb': ProjectileFlyweight(name='bomb', path='bomb', speed=0, lifetime=1000, damage=1, pierce=0, image_size=(5,5))
     }
-    #pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\projectile.png"), (5,5))
+    image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\projectile.png"), (5,5))
 
     @staticmethod
     def get(name):
-        return ProjectileFactory.projectiles.get(name)    
+        return ProjectileFactory.__projectiles.get(name)
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, name: str, source: tuple, target: tuple):
