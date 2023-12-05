@@ -14,7 +14,11 @@ class EnemyFlyweight:
 
 class EnemyFactory:
     __enemies = {
-        'small': EnemyFlyweight('small', pygame.Surface([8, 8]), 'melee', 10, 10),
+        'small': EnemyFlyweight('small', 
+                                pygame.transform.scale(
+                                    pygame.image.load('FlyWeightProject\Images\smallEnemy.png'), 
+                                    (100,100)
+                                    ), 'melee', 10, 10),
         'medium': None,
         'large': None
     }
