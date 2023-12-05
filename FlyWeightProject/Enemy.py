@@ -1,13 +1,14 @@
 import pygame
 import math
 from Projectile import Projectile
-from Weapon import normalize_vector, WeaponFactory, Weapon
+from Weapon import WeaponFactory, Weapon
 
 class EnemyFlyweight:
     def __init__(self, name: str, image: pygame.Surface, weapon_name: str, speed: float, 
                  default_health: int):
         self.name = name
         self.image = image
+        self.rect = image.get_rect()
         self.weapon = WeaponFactory.get(weapon_name)
         self.speed = speed
         self.default_health = default_health
@@ -16,16 +17,34 @@ class EnemyFactory:
     __enemies = {
         'small': EnemyFlyweight('small', 
                                 pygame.transform.scale(
-                                    pygame.image.load('FlyWeightProject\Images\smallEnemy.png'), 
+                                    pygame.image.load('./Images/smallEnemy.png'), 
                                     (100,100)
                                     ), 'melee', 10, 10),
-        'medium': None,
-        'large': None
+        'medium': EnemyFlyweight('medium',
+                                 pygame.transform.scale(
+                                     pygame.image.load('./Images/mediumEnemy.png'), 
+                                     (150,150)
+                                     ), 'melee', 8, 12),
+        'large': EnemyFlyweight('large', 
+                                pygame.transform.scale(
+                                    pygame.image.load('./Images/bigEnemy.png'),
+                                    (200,200)
+                                    ), 'shooter', 6,15)
+    }
+
+    _spawn_chace = {
+        'small': .60, 
+        'medium': .30,
+        'large' : .1
     }
 
     @staticmethod
     def get(name: str):
-        return EnemyFactory.__enemies.get(name)
+        return EnemyFactory.__enemies.get(name[0])
+    
+    @staticmethod
+    def get_random_enemy():
+        return EnemyFactory.get('small')
 
 class Enemy(pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
@@ -47,7 +66,7 @@ class Enemy(pygame.sprite.Sprite):
     def move(self, enemies: pygame.sprite.Group, player_pos: tuple[float, float], tDelta: float):
         self.movement_vector = (player_pos[0] - self.pos[0],
                                player_pos[1] - self.pos[1])
-        self.movement_vector = normalize_vector(self.movementVector)
+        self.movement_vector = Weapon.normalize_vector(self.movementVector)
         self.pos[0] += self.movement_vector[0] * self.speed * tDelta
         self.pos[1] += self.movement_vector[1] * self.speed * tDelta
         
@@ -60,7 +79,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.movement_vector[0] += self.pos[0] - sprite.pos[0]
                 self.movement_vector[1] += self.pos[1] - sprite.pos[1]
 
-        self.movement_vector = normalize_vector(self.movement_vector)
+        self.movement_vector = Weapon.normalize_vector(self.movement_vector)
         self.pos[0] += self.movement_vector[0] * 0.5  # The constant is how far the sprite will be
         self.pos[1] += self.movement_vector[1] * 0.5  # dragged from the sprite it collided with
         
