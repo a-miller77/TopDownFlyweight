@@ -11,4 +11,4 @@ class Coin(pygame.sprite.Sprite):
             Self.vaule = value
 
     def collide():
-        pass 
+        pass
