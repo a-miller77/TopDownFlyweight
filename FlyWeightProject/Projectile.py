@@ -24,6 +24,8 @@ class ProjectileFactory:
         'explosion': ProjectileFlyweight(),
         'bomb': Bomb()
     }
+    #pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\projectile.png"), (5,5))
+
     @staticmethod
     def get(name):
         return ProjectileFactory.projectiles.get(name)    
@@ -34,7 +36,7 @@ class Projectile(pygame.sprite.Sprite):
         self.created_at = pygame.time.get_ticks()
         self.movementVector = [target[0], target[1]]
         self.pos = [source[0], source[1]]
-        
+
         flyweight = ProjectileFactory.get(name)
         self.image = flyweight.image
         self.lifetime = flyweight.lifetime
