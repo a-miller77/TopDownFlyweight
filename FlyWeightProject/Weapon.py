@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+import Projectile
 
 class Weapon():
     def __init__(self):
@@ -27,7 +28,7 @@ class Weapon():
 class Shotgun(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\shotgun.png"), (40,40))
+        self.image = pygame.transform.scale(pygame.image.load("./Images/shotgun.png"), (40,40))
         self.weapon_cooldown = 550
         self.spread_arc = 60
         self.projectilesCount = 6
@@ -49,7 +50,7 @@ class Shotgun(Weapon):
 class MachineGun(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\machinegun.png"), (40,40))
+        self.image = pygame.transform.scale(pygame.image.load("./Images/machinegun.png"), (40,40))
         self.weapon_cooldown = 100
         self.spread_arc = 25
         
@@ -71,7 +72,7 @@ class MachineGun(Weapon):
 class Rifle(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\rifle.png"), (40,40))
+        self.image = pygame.transform.scale(pygame.image.load("./Images/rifle.png"), (40,40))
         self.weapon_cooldown = 300
         
     def attack(self, user, pos, all_sprites):
@@ -126,7 +127,7 @@ class Melee(Weapon):
 class MissileLauncher(Weapon):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\rocketLauncher.png"),(40,40))
+        self.image = pygame.transform.scale(pygame.image.load("./Images/rocketLauncher.png"),(40,40))
         self.weapon_cooldown = 800
         
     def attack(self, user, pos, all_sprites):
@@ -175,7 +176,7 @@ class WeaponFactory:
         'rifle': Rifle(),
         'melee': Melee(),
         'missilelauncher': MissileLauncher(),
-        'landmine': Landmine()
+        'landmine': LandMine()
     }
     @staticmethod
     def get(name):

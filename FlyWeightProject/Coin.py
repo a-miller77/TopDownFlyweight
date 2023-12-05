@@ -10,7 +10,7 @@ class CoinFlyweight():
 class CointFactory():
     __coins__ = {
         1 : CoinFlyweight(1, 
-                          pygame.transform.scale(pygame.image.load('FlyWeightProject\Images\coinImage.png'), 
+                          pygame.transform.scale(pygame.image.load('./Images/coinImage.png'), 
                                                  (10,10)))
         }
     
@@ -22,7 +22,7 @@ class Coin(pygame.sprite.Sprite):
     def __init__(self, value: int, pos: tuple[float, float]):
         flyweight = CoinFlyweight.get(value)
         self.value = flyweight.value
-        self.image = pygame.image.load('FlyWeightProject\Images\coinImage.png')
+        self.image = pygame.image.load('./Images/coinImage.png')
 
     def collide(self):
         self.kill()
