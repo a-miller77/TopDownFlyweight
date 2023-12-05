@@ -8,7 +8,7 @@ class ProjectileFlyweight():
         self.lifetime = lifetime
         self.name = name
         self.speed = speed
-        self.rect = self.image.get_rect()      
+        self.rect = self.image.get_rect()
 
 class ProjectileFactory:
     __projectiles = {

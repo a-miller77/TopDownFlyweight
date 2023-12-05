@@ -12,13 +12,13 @@ pygame.init()
 size    = (800, 600)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
-scoreFont = pygame.font.Font("reference_project/fonts/UpheavalPro.ttf", 30)
-healthFont = pygame.font.Font("reference_project/fonts/OmnicSans.ttf", 50)
+scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
+healthFont = pygame.font.Font("../reference_project/fonts/OmnicSans.ttf", 50)
 healthRender = healthFont.render('z', True, pygame.Color('red'))
 pygame.display.set_caption("Top Down")
 
 done = False
-hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
+hero = pygame.sprite.GroupSingle(Player((400, 300), screen.get_size()))
 ranged_enemies = pygame.sprite.Group()
 melee_enemies = pygame.sprite.Group()
 lastEnemy = 0
@@ -28,12 +28,13 @@ clock = pygame.time.Clock()
 MAX_ENEMIES = 50
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
-    hero.sprite.move(screen.get_size(), timeDelta)
+    hero.sprite.move(timeDelta)
 
     for enemy in melee_enemies:
         enemy.move(melee_enemies, player_pos = hero.sprite.rect.topleft, tDelta = timeDelta)
         damage = enemy.attack(hero.sprite.rect.topleft)
-        hero.sprite.collide(damage)
+        if (damage):
+            hero.sprite.collide(damage)
 
     for enemy in ranged_enemies:
         enemy.move(ranged_enemies, player_pos = hero.sprite.rect.topleft, tDelta = timeDelta)
@@ -71,24 +72,28 @@ def render_entities(hero, melee_enemies, ranged_enemies):
     
 def process_keys(keys, hero):
     if keys[pygame.K_w] or keys[pygame.K_UP]:
-        hero.sprite.movementVector[1] -= 1
+        hero.sprite.movement_vector[1] -= 1
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        hero.sprite.movementVector[0] -= 1
+        hero.sprite.movement_vector[0] -= 1
     if keys[pygame.K_s] or keys[pygame.K_RIGHT]:
-        hero.sprite.movementVector[1] += 1
+        hero.sprite.movement_vector[1] += 1
     if keys[pygame.K_d] or keys[pygame.K_DOWN]:
-        hero.sprite.movementVector[0] += 1
-    if keys[pygame.K_1]:
-        hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
-    if keys[pygame.K_2]:
-        hero.sprite.equippedWeapon = hero.sprite.availableWeapons[1]
-    if keys[pygame.K_3]:
-        hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
+        hero.sprite.movement_vector[0] += 1
+
+    if keys[pygame.K_SPACE]:
+        hero.sprite.attack(pygame.mouse.get_pos())
+
+    # if keys[pygame.K_1]:
+    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
+    # if keys[pygame.K_2]:
+    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[1]
+    # if keys[pygame.K_3]:
+    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
         
 def process_mouse(mouse, hero):
-    if mouse[0] or keys[pygame.K_SPACE]:
-        hero.sprite.shoot(pygame.mouse.get_pos())
- 
+    if mouse[0]:
+        hero.sprite.attack(pygame.mouse.get_pos())
+
 def game_loop():
     done = False
     # hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
