@@ -1,7 +1,23 @@
 import pygame
 import math
 import random
-from Projectile import Projectile
+from Projectile import Projectile, Bomb
+from Weapon import Shotgun, MachineGun, Rifle, Melee, MissileLauncher, Landmine
+
+class WeaponFactory:
+    __weapons = {
+        'shotgun': Shotgun(),
+        'machinegun': MachineGun(),
+        'rifle': Rifle(),
+        'melee': Melee(),
+        'missilelauncher': MissileLauncher(),
+        'landmine': Landmine()
+    }
+    
+    @staticmethod
+    def get(name):
+        return WeaponFactory.__weapons.get(name)
+
 
 
 class Weapon():
@@ -29,6 +45,7 @@ class Weapon():
 class Shotgun(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\shotgun.png"), (40,40))
         self.weapon_cooldown = 550
         self.spread_arc = 60
         self.projectilesCount = 6
@@ -50,6 +67,7 @@ class Shotgun(Weapon):
 class MachineGun(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\machinegun.png"), (40,40))
         self.weapon_cooldown = 100
         self.spread_arc = 25
         
@@ -71,6 +89,7 @@ class MachineGun(Weapon):
 class Rifle(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\rifle.png"), (40,40))
         self.weapon_cooldown = 300
         
     def attack(self, user, pos, all_sprites):
@@ -125,6 +144,7 @@ class Melee(Weapon):
 class MissileLauncher(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("FlyWeightProject\Images\rocketLauncher.png"),(40,40))
         self.weapon_cooldown = 800
         
     def attack(self, user, pos, all_sprites):
@@ -165,26 +185,4 @@ class LandMine(Weapon):
                     color=(0, 255, 0)  # Blue color for bombs
                 )
             
-        
-# class Bomb(Projectile):
-#     def __init__(self, pos, direction, speed, lifetime, color):
-#         super().__init__(pos, direction, speed, lifetime, color)
-#         self.explosion_radius = 30
-        
-#     def explode(self, surface, all_sprites):
-#         # Add explosion effect code here
-#         pygame.draw.circle(
-#             surface, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.explosion_radius
-#         )
-#         # You can add additional effects or damage logic based on the surrounding entities
-#         for sprite in all_sprites:
-#             if (
-#                 isinstance(sprite, Projectile)
-#                 and sprite != self
-#                 and math.sqrt(
-#                     (self.pos[0] - sprite.pos[0]) ** 2
-#                     + (self.pos[1] - sprite.pos[1]) ** 2
-#                 )
-#                 <= self.explosion_radius
-#             ):
-#                 sprite.kill()
+    
