@@ -5,10 +5,7 @@ from Projectile import Projectile, Bomb
 
 
     
-    @staticmethod
-    def get(name):
-        return WeaponFactory.__weapons.get(name)
-
+    
 
 
 class Weapon():
@@ -184,4 +181,8 @@ class WeaponFactory:
         'missilelauncher': MissileLauncher(),
         'landmine': Landmine()
     }
+    @staticmethod
+    def get(name):
+        return WeaponFactory.__weapons.get(name)
+
     
