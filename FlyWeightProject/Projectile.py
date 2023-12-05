@@ -1,10 +1,7 @@
 import pygame
-import numpy as np
 import math
 from Projectile import Projectile, Bomb
 from Player import Player
-
-
 
 class ProjectileFlyweight():
     def __init__(self, name: str, path: str, speed: float, lifetime: int, damage: int, pierce: int , image_size: tuple):

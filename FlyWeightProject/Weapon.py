@@ -184,5 +184,6 @@ class LandMine(Weapon):
                     lifetime=3000,
                     color=(0, 255, 0)  # Blue color for bombs
                 )
+            )
             
     
