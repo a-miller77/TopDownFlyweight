@@ -29,6 +29,7 @@ class ProjectileFactory:
     def get(name):
         return ProjectileFactory.__projectiles.get(name)
 
+
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, name: str, source: tuple, target: tuple):
         super().__init__()
@@ -42,7 +43,13 @@ class Projectile(pygame.sprite.Sprite):
         self.pierce = flyweight.pierce
         self.rect = flyweight.rect
         self.speed = flyweight.speed        
-        
+    
+    def collide(self):
+        if self.pierce < 0:
+            self.kill()
+        else:
+            self.pierce -= 1
+    
     def move(self, surfaceSize, tDelta):
         if pygame.time.get_ticks() > self.created_at + self.lifetime:
             self.kill()
@@ -51,7 +58,9 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.topleft = self.pos
         if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
            self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
-            self.kill()
+               self.collide()
+            
+            
     def render(self, surface):
         surface.blit(self.image, self.pos)
         
@@ -62,13 +71,23 @@ class Bomb(Projectile):
     def __init__(self, name: str, source: tuple, target: tuple):
         super().__init__("bomb", source, target)
         
+    def collide(self):
+        self.explode()
         
     def explode(self):
-        Player.projectiles.add(Projectile('explosion', self.pos, (0, 0)))
+        Player.projectiles.add(Projectile("explosion", self.pos, (0,0)))
         self.kill()
         
+        
     def move(self, surfaceSize, tDelta):
-        pass
+        if pygame.time.get_ticks() > self.created_at + self.lifetime:
+            self.explode()
+        self.pos[0] += self.movementVector[0] * self.speed * tDelta
+        self.pos[1] += self.movementVector[1] * self.speed * tDelta
+        self.rect.topleft = self.pos
+        if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
+           self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
+            self.explode()
     
     def render(self, surface):
         # TODO: render explosion
