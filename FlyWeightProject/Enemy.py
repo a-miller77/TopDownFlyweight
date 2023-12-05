@@ -1,4 +1,6 @@
+from ast import Not
 import pygame
+import random
 import math
 from Projectile import Projectile
 from Weapon import WeaponFactory, Weapon
@@ -20,14 +22,16 @@ class EnemyFactory:
                                     pygame.image.load('./Images/smallEnemy.png'), 
                                     (100,100)
                                     ), 'melee', 10, 10),
-        'medium': None,
-        'large': None
-    }
-
-    _spawn_chace = {
-        'small'
-        'medium'
-        'large'
+        'medium': EnemyFlyweight('medium',
+                                 pygame.transform.scale(
+                                     pygame.image.load('./Images/mediumEnemy.png'), 
+                                     (150,150)
+                                     ), 'melee', 8, 12),
+        'large': EnemyFlyweight('large', 
+                                pygame.transform.scale(
+                                    pygame.image.load('./Images/bigEnemy.png'),
+                                    (200,200)
+                                    ), 'shooter', 6,15)
     }
 
     @staticmethod
@@ -35,8 +39,19 @@ class EnemyFactory:
         return EnemyFactory.__enemies.get(name)
     
     @staticmethod
-    def get_random_enemy():
-        return 'small'
+    def get_random( small: float, medium : float, large : float):
+        verificaition = 1 - small - medium - large
+        while verificaition != 0.0:
+            print('You mush enter deciamls that add up to 1')
+            small = input("Small value")
+            medium = input('Medium value')
+            large = input('Large value')
+        ranNum = random.random()
+        if ranNum >= small:
+            return  'small'
+        elif ranNum >= medium: 
+            return 'medium'
+        return 'large'
 
 class Enemy(pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
