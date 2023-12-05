@@ -4,7 +4,7 @@ from Projectile import Projectile
 from Weapon import normalize_vector
 import WeaponFactory
 
-class EnemyFlyweight():
+class EnemyFlyweight:
     def __init__(self, name: str, image: pygame.Surface, weapon_name: str, speed: float, 
                  default_health: int):
         self.name = name
@@ -64,8 +64,13 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.topleft = self.pos
 
     def attack(self, target_pos):
-        self.weapon.attack(self, target_pos, self.last_shot_time)
+        self.weapon.attack(self, user=self, target_pos=target_pos, last_shot_time = self.last_shot_time)
         self.last_shot_time = pygame.time.get_ticks()
+
+    def collide(self, damage):
+        self.health -= damage
+        if self.health < 0:
+            self.kill()
 
     def render(self, surface):
         surface.blit(self.image, self.pos)
