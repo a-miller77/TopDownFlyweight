@@ -1,5 +1,5 @@
 from math import sqrt
-from typing import Self
+from typing import Any
 import pygame
 
 class CoinFlyweight():
@@ -7,22 +7,31 @@ class CoinFlyweight():
         self.value = value
         self.image = image
 
-class CointFactory():
-    __coins__ = {
+class CoinFactory():
+    __coins = {
         1 : CoinFlyweight(1, 
-                          pygame.transform.scale(pygame.image.load('FlyWeightProject\Images\coinImage.png'), 
-                                                 (10,10)))
+                          pygame.transform.scale(pygame.image.load('./Images/coinImage.png'), 
+                                                 (7,7)))
         }
     
     @staticmethod
-    def get(self, value: int):
-        return self.__Coins___.get(value)
+    def get(value: int):
+        return CoinFactory.__coins.get(value)
     
 class Coin(pygame.sprite.Sprite):
     def __init__(self, value: int, pos: tuple[float, float]):
-        flyweight = CoinFlyweight.get(value)
+        super().__init__()
+        flyweight = CoinFactory.get(value)
         self.value = flyweight.value
-        self.image = pygame.image.load('FlyWeightProject\Images\coinImage.png')
+        self.image = flyweight.image
+        self.rect = self.image.get_rect(topleft=pos)
+        self.pos = pos
+
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        return super().update(*args, **kwargs)
+
+    def render(self, surface):
+        surface.blit(self.image, self.pos)
 
     def collide(self):
         self.kill()

@@ -7,33 +7,43 @@ from Enemy import Enemy
 from Enemy import EnemyFactory
 from Projectile import Projectile
 from Weapon import WeaponFactory
+import cProfile
 
 pygame.init()
 size    = (800, 600)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
-scoreFont = pygame.font.Font("reference_project/fonts/UpheavalPro.ttf", 30)
-healthFont = pygame.font.Font("reference_project/fonts/OmnicSans.ttf", 50)
+scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
+healthFont = pygame.font.Font("../reference_project/fonts/OmnicSans.ttf", 50)
 healthRender = healthFont.render('z', True, pygame.Color('red'))
 pygame.display.set_caption("Top Down")
 
 done = False
-hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
+hero = pygame.sprite.GroupSingle(Player((400, 300), screen.get_size()))
 ranged_enemies = pygame.sprite.Group()
 melee_enemies = pygame.sprite.Group()
 lastEnemy = 0
 score = 0
 clock = pygame.time.Clock()
 
-MAX_ENEMIES = 50
+#global key_repeat_enabled, key_repeat_delay, key_repeat_interval, last_key_event_time
+
+key_repeat_enabled = False
+key_repeat_delay = 500  # milliseconds
+key_repeat_interval = 50  # milliseconds
+last_key_event_time = 0
+
+MAX_ENEMIES = 300
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
-    hero.sprite.move(screen.get_size(), timeDelta)
+    print("tick")
+    hero.sprite.move(timeDelta)
 
     for enemy in melee_enemies:
         enemy.move(melee_enemies, player_pos = hero.sprite.rect.topleft, tDelta = timeDelta)
         damage = enemy.attack(hero.sprite.rect.topleft)
-        hero.sprite.collide(damage)
+        if damage != None:
+            hero.sprite.collide(damage)
 
     for enemy in ranged_enemies:
         enemy.move(ranged_enemies, player_pos = hero.sprite.rect.topleft, tDelta = timeDelta)
@@ -48,36 +58,42 @@ def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
     for proj in Player.projectiles:
         proj.move(screen.get_size(), timeDelta) #TODO
         melee_enemies_hit = pygame.sprite.spritecollide(proj, melee_enemies, False)
-        range_enemies_hit = pygame.sprite.spritecollide(proj, ranged_enemies, False)
+        ranged_enemies_hit = pygame.sprite.spritecollide(proj, ranged_enemies, False)
 
         for enemy in melee_enemies_hit:
-            enemy.collide(proj.damage)
-        for enemy in range_enemies_hit:
+            #print("Hit!")
             enemy.collide(proj.damage)
 
-        if melee_enemies_hit or range_enemies_hit:
+        for enemy in ranged_enemies_hit:
+            enemy.collide(proj.damage)
+
+        if melee_enemies_hit or ranged_enemies_hit:
             proj.collide()
+               
+    collected = None
+    collected = pygame.sprite.spritecollide(hero.sprite, Player.coins, True)
+    hero.sprite.collected_coins += len(collected)
 
 def render_entities(hero, melee_enemies, ranged_enemies):
-    hero.sprite.render(screen)
-    for proj in Player.projectiles:
-        proj.render(screen)
-    for proj in Enemy.projectiles:
-        proj.render(screen)
-    for enemy in melee_enemies:
-        enemy.render(screen)
-    for enemy in ranged_enemies:
-        enemy.render(screen)
+    hero.draw(screen)
+    Player.projectiles.draw(screen)
+    # for coin in Player.coins:
+    #     coin.render(screen)
+    Player.coins.draw(screen)
+    Enemy.projectiles.draw(screen)
+    melee_enemies.draw(screen)
+    ranged_enemies.draw(screen)
+
     
 def process_keys(keys, hero):
     if keys[pygame.K_w] or keys[pygame.K_UP]:
-        hero.sprite.movementVector[1] -= 1
+        hero.sprite.movement_vector[1] -= 1
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        hero.sprite.movementVector[0] -= 1
+        hero.sprite.movement_vector[0] -= 1
     if keys[pygame.K_s] or keys[pygame.K_RIGHT]:
-        hero.sprite.movementVector[1] += 1
+        hero.sprite.movement_vector[1] += 1
     if keys[pygame.K_d] or keys[pygame.K_DOWN]:
-        hero.sprite.movementVector[0] += 1
+        hero.sprite.movement_vector[0] += 1
     if keys[pygame.K_1]:
         hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
     if keys[pygame.K_2]:
@@ -86,13 +102,14 @@ def process_keys(keys, hero):
         hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
         
 def process_mouse(mouse, hero):
-    if mouse[0] or keys[pygame.K_SPACE]:
+    if mouse[0]:
         hero.sprite.shoot(pygame.mouse.get_pos())
  
 def game_loop():
     done = False
     # hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
     # enemies = pygame.sprite.Group()
+    # pygame.key.set_repeat(10)
     last_enemy_spawn = pygame.time.get_ticks()
     score = 0
     
@@ -111,7 +128,7 @@ def game_loop():
         
         # Enemy spawning process
         num_enemies = len(ranged_enemies) + len(melee_enemies)
-        if last_enemy_spawn < currentTime - 200 and num_enemies < MAX_ENEMIES:
+        if last_enemy_spawn < currentTime - 50 and num_enemies < MAX_ENEMIES:
             
             enemy_name = EnemyFactory.get_random()
 
@@ -135,7 +152,7 @@ def game_loop():
 
             last_enemy_spawn = currentTime
         
-        move_entities(hero, melee_enemies, ranged_enemies, clock.get_time()/17)
+        move_entities(hero, melee_enemies, ranged_enemies, clock.get_time()/10)
         render_entities(hero, melee_enemies, ranged_enemies)
         
         # Health and score render
@@ -145,7 +162,7 @@ def game_loop():
         # for hp in range(hero.sprite.health):
         #     screen.blit(healthRender, (15 + hp*35, 0))
 
-        score = hero.sprite.coins
+        score = hero.sprite.collected_coins
         
         scoreRender = scoreFont.render(str(score), True, pygame.Color('black'))
         scoreRect = scoreRender.get_rect()
@@ -154,9 +171,10 @@ def game_loop():
         screen.blit(scoreRender, scoreRect)
         
         pygame.display.flip()
-        clock.tick(120)
+        clock.tick(30)
 
-done = game_loop()
+cProfile.run('game_loop()')
+
 while not done:
     keys = pygame.key.get_pressed()
     mouse = pygame.mouse.get_pressed()
@@ -165,7 +183,12 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:       
+                # Enable key repeat for spacebar
+                key_repeat_enabled = True
+                last_key_event_time = pygame.time.get_ticks()
     
     if keys[pygame.K_r]:
-        done = game_loop()
+        game_loop()
 pygame.quit()
