@@ -22,7 +22,7 @@ class EnemyFactory:
         'small': EnemyFlyweight(name='small', 
                                 image= pygame.transform.scale(
                                     pygame.image.load('./Images/smallEnemy.png'), 
-                                    (25,25)
+                                    (30,30)
                                     ), 
                                 weapon_name='melee',
                                 speed = 0.8, 
@@ -30,7 +30,7 @@ class EnemyFactory:
         'medium': EnemyFlyweight(name='medium', 
                                 image= pygame.transform.scale(
                                     pygame.image.load('./Images/mediumEnemy.png'), 
-                                    (30,30)
+                                    (20,20*1.92)
                                     ), 
                                 weapon_name='melee',
                                 speed = 0.6, 
@@ -38,7 +38,7 @@ class EnemyFactory:
         'large': EnemyFlyweight(name='large', 
                                 image= pygame.transform.scale(
                                     pygame.image.load('./Images/largeEnemy.png'), 
-                                    (40,40)
+                                    (70,70)
                                     ), 
                                 weapon_name='melee',
                                 speed = 0.4, 

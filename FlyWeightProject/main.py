@@ -137,7 +137,7 @@ def game_loop():
             enemy_name = EnemyFactory.get_random()
 
             spawn_side = random.random()
-            pos = None
+            
             if spawn_side < 0.25:
                 pos = (0, random.randint(0, size[1]))
             elif spawn_side < 0.5:

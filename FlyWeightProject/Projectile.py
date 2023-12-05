@@ -94,7 +94,7 @@ class Bomb(Projectile):
 class Explosion(Projectile):
     def __init__(self, name, source, target):
         super().__init__("explosion", source, source)
-        self.rect = self.rect.move(-50, -50)
+        self.rect = self.rect.move(-self.rect.height, -self.rect.width)
     
     def collide(self):
         pass
