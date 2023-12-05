@@ -31,6 +31,7 @@ class Projectile(pygame.sprite.Sprite):
         self.created_at = pygame.time.get_ticks()
         self.movementVector = [target[0], target[1]]
         self.pos = [source[0], source[1]]
+
         flyweight = ProjectileFactory.get(name)
         self.image = flyweight.image
         self.lifetime = flyweight.lifetime
@@ -47,34 +48,7 @@ class Projectile(pygame.sprite.Sprite):
         if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
            self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
             self.kill()
-    def render(self, surface):
-        surface.blit(self.image, self.pos)
-        
-class Projectile(pygame.sprite.Sprite):
-    def __init__(self, source, target, speed, lifetime, color):
-        super().__init__()
-        self.image = pygame.Surface([4, 4])
-        self.image.set_colorkey(pygame.Color('black'))
-        self.rect = self.image.get_rect(x=source[0], y=source[1])
-        pygame.draw.circle(self.image, color,
-                           (self.rect.width // 2, self.rect.height // 2),
-                           self.rect.width // 2)
-        
-        self.pos = [source[0], source[1]]
-        self.movementVector = [target[0], target[1]]
-        self.speed = speed
-        self.lifetime = lifetime
-        self.createdAt = pygame.time.get_ticks()
-        
-    def move(self, surfaceSize, tDelta):
-        if pygame.time.get_ticks() > self.createdAt + self.lifetime:
-            self.kill()
-        self.pos[0] += self.movementVector[0] * self.speed * tDelta
-        self.pos[1] += self.movementVector[1] * self.speed * tDelta
-        self.rect.topleft = self.pos
-        if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
-           self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
-            self.kill()
+
     def render(self, surface):
         surface.blit(self.image, self.pos)
 
@@ -82,22 +56,22 @@ class Projectile(pygame.sprite.Sprite):
 
 
 class Bomb(Projectile):
-    def __init__(self, pos, direction, speed, lifetime, color):
-        super().__init__(pos, direction, speed, lifetime, color)
-        self.explosion_radius = 50
+    def __init__(self, name: str, source: tuple, target: tuple):
+        '''
+        name field is ignored
+        '''
+        super().__init__('bomb', source, target)
+        self.rect = pygame.rect.Rect(50)
 
-    def explode(self, surface, all_sprites):
-        pygame.draw.circle(
-            surface, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.explosion_radius
-        )
-        for sprite in all_sprites:
-            if (
-                isinstance(sprite, Projectile)
-                and sprite != self
-                and math.sqrt(
-                    (self.pos[0] - sprite.pos[0]) ** 2
-                    + (self.pos[1] - sprite.pos[1]) ** 2
-                )
-                <= self.explosion_radius
-            ):
-                sprite.kill()
+    def move(self, surfaceSize, tDelta):
+        #copy logic from projectile
+        if False:
+            None
+        else:
+            self.explode()
+
+    def collide(self):
+        self.explode()
+
+    def explode(self):
+        Projectile()
