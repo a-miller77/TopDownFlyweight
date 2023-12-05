@@ -5,7 +5,7 @@ from Projectile import Projectile, Bomb
 
 class Weapon():
     def __init__(self):
-        self.last_shot = 0
+        pass
     
     def attack(self, use, pos, all_sprites):
         pass
@@ -54,9 +54,9 @@ class MachineGun(Weapon):
         self.weapon_cooldown = 100
         self.spread_arc = 25
         
-    def attack(self, user, pos):
+    def attack(self, user, pos, last_shot_time):
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_shot > self.weapon_cooldown:
+        if current_time - last_shot_time > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
                 if pos != user.pos else (1, 1)
             self.lastShot = current_time
@@ -76,20 +76,19 @@ class Rifle(Weapon):
         self.image = pygame.transform.scale(pygame.image.load("./Images/rifle.png"), (40,40))
         self.weapon_cooldown = 300
         
-    def attack(self, user, pos, all_sprites):
+    def attack(self, user, pos, last_shot_time):
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_shot > self.weapon_cooldown:
+        if current_time - last_shot_time > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
                 if pos != user.pos else (1, 1)
-            self.lastShot = current_time
-            proj_dir = super().rotate_vector(direction, 0)   
+            #proj_dir = super().rotate_vector(direction, 0)   
             user.projectiles.add(
                 Projectile(
+                    'bullet',
                     user.pos,
-                    super().normalize_vector(proj_dir),
-                    speed=6, 
-                    lifetime=5000,
-                    color=(194, 54, 16)))
+                    direction
+                )
+            )
         
                 
 class Melee(Weapon):

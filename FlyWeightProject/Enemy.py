@@ -25,14 +25,24 @@ class EnemyFactory:
                                     (25,25)
                                     ), 
                                 weapon_name='melee',
-                                speed = 1, 
+                                speed = 0.8, 
                                 default_health=2),
-    }
-
-    _spawn_chace = {
-        'small'
-        'medium'
-        'large'
+        'medium': EnemyFlyweight(name='medium', 
+                                image= pygame.transform.scale(
+                                    pygame.image.load('./Images/mediumEnemy.png'), 
+                                    (30,30)
+                                    ), 
+                                weapon_name='melee',
+                                speed = 0.6, 
+                                default_health=10),
+        'large': EnemyFlyweight(name='large', 
+                                image= pygame.transform.scale(
+                                    pygame.image.load('./Images/largeEnemy.png'), 
+                                    (40,40)
+                                    ), 
+                                weapon_name='melee',
+                                speed = 0.4, 
+                                default_health=45)
     }
 
     @staticmethod
@@ -41,8 +51,16 @@ class EnemyFactory:
     
     @staticmethod
     def get_random():
-        return 'small'
-
+        choices = []
+        for _ in range(15):
+            choices.append('small')
+        for _ in range(4):
+            choices.append('medium')
+        for _ in range(1):
+            choices.append('large')
+        idx = random.randint(0,len(choices)-1)
+        return choices[idx]
+    
 class Enemy(pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
     def __init__(self, name, pos: tuple[float, float]):

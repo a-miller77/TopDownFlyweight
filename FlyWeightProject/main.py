@@ -33,7 +33,7 @@ key_repeat_delay = 500  # milliseconds
 key_repeat_interval = 50  # milliseconds
 last_key_event_time = 0
 
-MAX_ENEMIES = 300
+MAX_ENEMIES = 50
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
     print("tick")
@@ -132,7 +132,7 @@ def game_loop():
         
         # Enemy spawning process
         num_enemies = len(ranged_enemies) + len(melee_enemies)
-        if last_enemy_spawn < currentTime - 50 and num_enemies < MAX_ENEMIES:
+        if last_enemy_spawn < currentTime - 150 and num_enemies < MAX_ENEMIES:
             
             enemy_name = EnemyFactory.get_random()
 
@@ -177,8 +177,8 @@ def game_loop():
         pygame.display.flip()
         clock.tick(30)
 
-cProfile.run('game_loop()')
-
+#cProfile.run('game_loop()')
+game_loop()
 while not done:
     keys = pygame.key.get_pressed()
     mouse = pygame.mouse.get_pressed()
