@@ -64,8 +64,9 @@ class Projectile(pygame.sprite.Sprite):
 
 
 class Bomb(Projectile):
-    def __init__(self, name: str, source: tuple, target: tuple):
-        super().__init__("bomb", source, target)
+    def __init__(self, name: str, source, target: tuple):
+        super().__init__("bomb", source.pos, target)
+        self.player = source
         
     def collide(self):
         #self.explode()
@@ -78,6 +79,7 @@ class Bomb(Projectile):
     def move(self, surfaceSize, tDelta):
         if pygame.time.get_ticks() > self.created_at + self.lifetime:
             self.explode()
+            
         self.pos[0] += self.movement_vector[0] * self.speed * tDelta
         self.pos[1] += self.movement_vector[1] * self.speed * tDelta
         self.rect.topleft = self.pos

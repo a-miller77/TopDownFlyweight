@@ -94,16 +94,20 @@ def process_keys(keys, hero):
         hero.sprite.movement_vector[1] += 1
     if keys[pygame.K_d] or keys[pygame.K_DOWN]:
         hero.sprite.movement_vector[0] += 1
-    if keys[pygame.K_1]:
-        hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
-    if keys[pygame.K_2]:
-        hero.sprite.equippedWeapon = hero.sprite.availableWeapons[1]
-    if keys[pygame.K_3]:
-        hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
+
+    if keys[pygame.K_SPACE]:
+        hero.sprite.attack(pygame.mouse.get_pos())
+
+    # if keys[pygame.K_1]:
+    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
+    # if keys[pygame.K_2]:
+    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[1]
+    # if keys[pygame.K_3]:
+    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
         
 def process_mouse(mouse, hero):
     if mouse[0]:
-        hero.sprite.shoot(pygame.mouse.get_pos())
+        hero.sprite.attack(pygame.mouse.get_pos())
  
 def game_loop():
     done = False

@@ -46,6 +46,9 @@ class Player( pygame.sprite.Sprite):
         self.rect.topleft = self.pos
         self.movement_vector = [0, 0]
 
+    def add_to_static_projectiles(self, proj):
+        print("added proj")
+        Player.projectiles.add(proj)
 
     def attack(self, target_pos):
         self.weapon.attack(self, target_pos, self.last_shot_time)
