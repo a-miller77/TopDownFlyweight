@@ -47,12 +47,10 @@ class Projectile(pygame.sprite.Sprite):
         if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
            self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
             self.kill()
+
     def render(self, surface):
         surface.blit(self.image, self.pos)
     
-    
-
-
 class Bomb(Projectile):
     def __init__(self, pos, direction, speed, lifetime, color):
         super().__init__(pos, direction, speed, lifetime, color)

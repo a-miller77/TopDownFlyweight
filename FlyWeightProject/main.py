@@ -4,7 +4,9 @@ import pygame
 import random
 from Player import Player
 from Enemy import Enemy
+from Enemy import EnemyFactory
 from Projectile import Projectile
+from Weapon import WeaponFactory
 
 pygame.init()
 size    = (800, 600)
@@ -22,6 +24,8 @@ melee_enemies = pygame.sprite.Group()
 lastEnemy = 0
 score = 0
 clock = pygame.time.Clock()
+
+MAX_ENEMIES = 50
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
     hero.sprite.move(screen.get_size(), timeDelta)
@@ -89,7 +93,7 @@ def game_loop():
     done = False
     # hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
     # enemies = pygame.sprite.Group()
-    lastEnemy = pygame.time.get_ticks()
+    last_enemy_spawn = pygame.time.get_ticks()
     score = 0
     
     while hero.sprite.alive and not done:
@@ -106,24 +110,43 @@ def game_loop():
         process_mouse(mouse, hero)
         
         # Enemy spawning process
-        if lastEnemy < currentTime - 200 and len(enemies) < 50:
-            spawnSide = random.random()
-            if spawnSide < 0.25:
-                enemies.add(Enemy((0, random.randint(0, size[1]))))
-            elif spawnSide < 0.5:
-                enemies.add(Enemy((size[0], random.randint(0, size[1]))))
-            elif spawnSide < 0.75:
-                enemies.add(Enemy((random.randint(0, size[0]), 0)))
+        num_enemies = len(ranged_enemies) + len(melee_enemies)
+        if last_enemy_spawn < currentTime - 200 and num_enemies < MAX_ENEMIES:
+            
+            enemy_name = EnemyFactory.get_random()
+
+            spawn_side = random.random()
+            pos = None
+            if spawn_side < 0.25:
+                pos = (0, random.randint(0, size[1]))
+            elif spawn_side < 0.5:
+                pos = (size[0], random.randint(0, size[1]))
+            elif spawn_side < 0.75:
+                pos = (random.randint(0, size[0]), 0)
             else:
-                enemies.add(Enemy((random.randint(0, size[0]), size[1])))
-            lastEnemy = currentTime
+                pos = (random.randint(0, size[0]), size[1])
+
+            enemy = Enemy(enemy_name, pos)
+
+            if(enemy.weapon == WeaponFactory.get('melee')):
+                melee_enemies.add(enemy)
+            else:
+                ranged_enemies.add(enemy)
+
+            last_enemy_spawn = currentTime
         
-        score += move_entities(hero, enemies, clock.get_time()/17)
-        render_entities(hero, enemies)
+        move_entities(hero, melee_enemies, ranged_enemies, clock.get_time()/17)
+        render_entities(hero, melee_enemies, ranged_enemies)
         
         # Health and score render
-        for hp in range(hero.sprite.health):
-            screen.blit(healthRender, (15 + hp*35, 0))
+
+        #TODO RENDER HEALTH AND SCORE
+
+        # for hp in range(hero.sprite.health):
+        #     screen.blit(healthRender, (15 + hp*35, 0))
+
+        score = hero.sprite.coins
+        
         scoreRender = scoreFont.render(str(score), True, pygame.Color('black'))
         scoreRect = scoreRender.get_rect()
         scoreRect.right = size[0] - 20

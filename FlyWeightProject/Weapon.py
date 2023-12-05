@@ -166,25 +166,25 @@ class LandMine(Weapon):
                 )
             
         
-class Bomb(Projectile):
-    def __init__(self, pos, direction, speed, lifetime, color):
-        super().__init__(pos, direction, speed, lifetime, color)
-        self.explosion_radius = 30
+# class Bomb(Projectile):
+#     def __init__(self, pos, direction, speed, lifetime, color):
+#         super().__init__(pos, direction, speed, lifetime, color)
+#         self.explosion_radius = 30
         
-    def explode(self, surface, all_sprites):
-        # Add explosion effect code here
-        pygame.draw.circle(
-            surface, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.explosion_radius
-        )
-        # You can add additional effects or damage logic based on the surrounding entities
-        for sprite in all_sprites:
-            if (
-                isinstance(sprite, Projectile)
-                and sprite != self
-                and math.sqrt(
-                    (self.pos[0] - sprite.pos[0]) ** 2
-                    + (self.pos[1] - sprite.pos[1]) ** 2
-                )
-                <= self.explosion_radius
-            ):
-                sprite.kill()
+#     def explode(self, surface, all_sprites):
+#         # Add explosion effect code here
+#         pygame.draw.circle(
+#             surface, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.explosion_radius
+#         )
+#         # You can add additional effects or damage logic based on the surrounding entities
+#         for sprite in all_sprites:
+#             if (
+#                 isinstance(sprite, Projectile)
+#                 and sprite != self
+#                 and math.sqrt(
+#                     (self.pos[0] - sprite.pos[0]) ** 2
+#                     + (self.pos[1] - sprite.pos[1]) ** 2
+#                 )
+#                 <= self.explosion_radius
+#             ):
+#                 sprite.kill()

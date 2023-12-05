@@ -2,13 +2,14 @@ import pygame
 import math
 from Projectile import Projectile
 from Weapon import normalize_vector
-import WeaponFactory
+from Weapon import WeaponFactory
 
 class EnemyFlyweight:
     def __init__(self, name: str, image: pygame.Surface, weapon_name: str, speed: float, 
                  default_health: int):
         self.name = name
         self.image = image
+        self.rect = image.get_rect()
         self.weapon = WeaponFactory.get(weapon_name)
         self.speed = speed
         self.default_health = default_health
@@ -20,9 +21,19 @@ class EnemyFactory:
         'large': None
     }
 
+    _spawn_chace = {
+        'small'
+        'medium'
+        'large'
+    }
+
     @staticmethod
     def get(name: str):
-        return EnemyFactory.__enemies.get(name)
+        return EnemyFactory.__enemies.get(name[0])
+    
+    @staticmethod
+    def get_random_enemy():
+        return EnemyFactory.get('small')
 
 class Enemy(pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
