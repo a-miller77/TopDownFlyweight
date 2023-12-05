@@ -10,7 +10,7 @@ from Weapon import WeaponFactory
 import cProfile
 
 pygame.init()
-size    = (800, 600)
+size = (1280, 800)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
 scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
@@ -173,6 +173,15 @@ def game_loop():
         scoreRect.right = size[0] - 20
         scoreRect.top = 20
         screen.blit(scoreRender, scoreRect)
+        
+        health = hero.sprite.health
+        
+        healthRender = healthFont.render(str(health), True, pygame.Color('black'))
+        healthRect = healthRender.get_rect()
+        healthRect.left = 20
+        healthRect.top = 20
+        screen.blit(healthRender, healthRect)
+        
         
         pygame.display.flip()
         clock.tick(30)
