@@ -2,17 +2,8 @@ import pygame
 import math
 import random
 from Projectile import Projectile, Bomb
-from Weapon import Shotgun, MachineGun, Rifle, Melee, MissileLauncher, Landmine
 
-class WeaponFactory:
-    __weapons = {
-        'shotgun': Shotgun(),
-        'machinegun': MachineGun(),
-        'rifle': Rifle(),
-        'melee': Melee(),
-        'missilelauncher': MissileLauncher(),
-        'landmine': Landmine()
-    }
+
     
     @staticmethod
     def get(name):
@@ -184,5 +175,13 @@ class LandMine(Weapon):
                     lifetime=3000,
                     color=(0, 255, 0)  # Blue color for bombs
                 )
-            
+class WeaponFactory:
+    __weapons = {
+        'shotgun': Shotgun(),
+        'machinegun': MachineGun(),
+        'rifle': Rifle(),
+        'melee': Melee(),
+        'missilelauncher': MissileLauncher(),
+        'landmine': Landmine()
+    }
     

@@ -1,7 +1,6 @@
 import pygame
 import numpy as np
 import math
-from Projectile import Projectile, Bomb
 from Player import Player
 
 
