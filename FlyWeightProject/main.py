@@ -117,12 +117,23 @@ def process_mouse(mouse, hero):
         hero.sprite.attack(pygame.mouse.get_pos())
  
 def game_loop():
+    # reset the hero's health and score
+    hero.sprite.alive = True
+    hero.sprite.health = 100
+    hero.sprite.collected_coins = 0
+    
+    # clear any existing enemies if there are any
+    melee_enemies.empty()
+    ranged_enemies.empty()
+    Enemy.projectiles.empty()
+    Player.projectiles.empty()
+    Player.coins.empty()
+    
     done = False
     # hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
     # enemies = pygame.sprite.Group()
     # pygame.key.set_repeat(10)
     last_enemy_spawn = pygame.time.get_ticks()
-    score = 0
     
     while hero.sprite.alive and not done:
         keys = pygame.key.get_pressed()
@@ -132,6 +143,10 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
+        # check to see if the hero is dead
+        if hero.sprite.health <= 0:
+            hero.sprite.alive = False
+            
         
         process_keys(keys, hero)
         process_mouse(mouse, hero)

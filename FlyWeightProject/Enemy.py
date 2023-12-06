@@ -118,9 +118,10 @@ class Enemy(pygame.sprite.Sprite):
 
     def attack(self, target_pos):
         if not self.dead:
-            pass
-            # self.weapon.attack(self, pos=target_pos, last_shot_time = self.last_shot_time)
-            # self.last_shot_time = pygame.time.get_ticks()
+            damage = self.weapon.attack(self, pos=target_pos, last_shot_time = self.last_shot_time)
+            if damage == 10:
+                self.last_shot_time = pygame.time.get_ticks()
+            return damage
 
     def collide(self, damage):
         self.health -= damage
