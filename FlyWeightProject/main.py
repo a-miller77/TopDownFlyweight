@@ -20,7 +20,7 @@ pygame.display.set_caption("Top Down")
 background = pygame.Surface(screen.get_size())
 background.fill(BGCOLOR)
 # set an image as background
-background = pygame.image.load("background.png")
+background = pygame.image.load("../Images/background.png")
 background = background.convert()
 
 try:
