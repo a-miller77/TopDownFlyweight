@@ -125,7 +125,7 @@ class MissileLauncher(Weapon):
             # proj_dir = super().rotate_vector(direction, 0)
             user.projectiles.add(
                 Projectile(
-                    'bomb',
+                    'missile',
                     user.pos,
                     direction
                 )

@@ -14,10 +14,10 @@ class ProjectileFlyweight():
 class ProjectileFactory:
     __projectiles = {
         'bullet': ProjectileFlyweight(name='bullet', path='projectile', speed=0.03, lifetime=1000, damage=3, pierce=0, image_size=(15,15)),
-        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', path='projectile', speed=0.05, lifetime=1500, damage=10, pierce=300, image_size=(15,15)),
+        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', path='projectile', speed=0.05, lifetime=1500, damage=10, pierce=99, image_size=(15,15)),
         'explosion': ProjectileFlyweight(name='explosion', path='explosion', speed=0, lifetime=100, damage=3, pierce=0, image_size=(200*0.96,200)),
-        'landmine': ProjectileFlyweight(name='landmine', path='landmine', speed=0, lifetime=700, damage=0, pierce=0, image_size=(20,20)),
-        'missile': ProjectileFlyweight(name='landmine', path='bomb', speed=0, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
+        'landmine': ProjectileFlyweight(name='bomb', path='landmine', speed=0, lifetime=700, damage=0, pierce=0, image_size=(20,20)),
+        'missile': ProjectileFlyweight(name='bomb', path='missile', speed=0.08, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
     }
     #image = pygame.transform.scale(pygame.image.load(".\Images\projectile.png"), (5,5))
 
