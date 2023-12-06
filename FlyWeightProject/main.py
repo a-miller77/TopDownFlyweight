@@ -148,6 +148,7 @@ def game_loop():
                 return True
         screen.fill(BGCOLOR)
         
+        process_keys(keys, hero, toggle_enabled)
         process_mouse(mouse, hero)
         
         # Enemy spawning process
