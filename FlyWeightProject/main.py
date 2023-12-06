@@ -20,7 +20,7 @@ pygame.display.set_caption("Top Down")
 background = pygame.Surface(screen.get_size())
 background.fill(BGCOLOR)
 # set an image as background
-background = pygame.image.load("../Images/background.png")
+background = pygame.image.load("./Images/background.png")
 background = background.convert()
 
 try:
@@ -101,7 +101,7 @@ def draw_centered_surface(screen, surface, y):
     
 
     
-def process_keys(keys, hero):
+def process_keys(keys, hero, toggle_enabled):
     if keys[pygame.K_w] or keys[pygame.K_UP]:
         hero.sprite.movement_vector[1] -= 1
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
@@ -148,7 +148,6 @@ def game_loop():
                 return True
         screen.fill(BGCOLOR)
         
-        process_keys(keys, hero)
         process_mouse(mouse, hero)
         
         # Enemy spawning process
