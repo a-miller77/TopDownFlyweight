@@ -10,13 +10,30 @@ from Weapon import WeaponFactory
 import cProfile
 
 pygame.init()
-size = (800, 600)
+pygame.display.set_caption("Pew Pew Game MF")
+size = (1280, 800)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
-scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
-healthFont = pygame.font.Font("../reference_project/fonts/OmnicSans.ttf", 50)
-healthRender = healthFont.render('z', True, pygame.Color('red'))
 pygame.display.set_caption("Top Down")
+
+# Create background
+background = pygame.Surface(screen.get_size())
+background.fill(BGCOLOR)
+# set an image as background
+background = pygame.image.load("background.png")
+background = background.convert()
+
+try:
+    font = pygame.font.Font("Roboto-Regular.ttf", 20)
+except OSError:
+    # If the font file is not available, the default will be used.
+    font = pygame.font.Font(pygame.font.get_default_font(), 20)
+
+# display the hero health on the top left of the screen
+hero_health_text = font.render("Hero Health: ", True, (0, 0, 0))
+# display the hero score on the top right of the screen
+hero_score_text = font.render("Score: ", True, (0, 0, 0))
+
 
 done = False
 hero = pygame.sprite.GroupSingle(Player((screen.get_size()[0]/2, screen.get_size()[1]/2), screen.get_size()))
@@ -79,6 +96,9 @@ def render_entities(hero, melee_enemies, ranged_enemies):
     Enemy.projectiles.draw(screen)
     melee_enemies.draw(screen)
     ranged_enemies.draw(screen)
+def draw_centered_surface(screen, surface, y):
+    screen.blit(surface, (screen.get_width()/2 - surface.get_width()/2, y))
+    
 
     
 def process_keys(keys, hero):
@@ -160,20 +180,11 @@ def game_loop():
         move_entities(hero, melee_enemies, ranged_enemies, clock.get_time()/10)
         render_entities(hero, melee_enemies, ranged_enemies)
         
-        # Health and score render
-
-        #TODO RENDER HEALTH AND SCORE
-
-        # for hp in range(hero.sprite.health):
-        #     screen.blit(healthRender, (15 + hp*35, 0))
-
-        score = hero.sprite.collected_coins
-        
-        scoreRender = scoreFont.render(str(score), True, pygame.Color('black'))
-        scoreRect = scoreRender.get_rect()
-        scoreRect.right = size[0] - 20
-        scoreRect.top = 20
-        screen.blit(scoreRender, scoreRect)
+        hero_health_text = font.render(f"Hero Health: {hero.sprite.health}", True, (0, 0, 0))
+        hero_score_text = font.render(f"Score: {hero.sprite.collected_coins}", True, (0, 0, 0))
+        # display the hero health on the bottom of the screen
+        draw_centered_surface(screen, hero_health_text, screen.get_height() - hero_health_text.get_height())
+        draw_centered_surface(screen, hero_score_text, 0)
         
         pygame.display.flip()
         clock.tick(30)
