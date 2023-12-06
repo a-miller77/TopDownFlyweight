@@ -100,6 +100,9 @@ def process_keys(keys, hero):
         hero.sprite.movement_vector[1] += 1
     if keys[pygame.K_d] or keys[pygame.K_DOWN]:
         hero.sprite.movement_vector[0] += 1
+
+    if keys[pygame.K_SPACE]:
+        hero.sprite.attack(pygame.mouse.get_pos())
     
     if keys[pygame.K_1]:
         hero.sprite.weapon = WeaponFactory.get('shotgun')
