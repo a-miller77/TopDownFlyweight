@@ -30,17 +30,18 @@ class Player( pygame.sprite.Sprite):
         self.movement_vector = normalize_vector(self.movement_vector)
         newPos = (self.pos[0] + self.movement_vector[0]*self.speed*tDelta,
                     self.pos[1] + self.movement_vector[1]*self.speed*tDelta)
-        if newPos[0] < 0:
-            self.pos[0] = 0
-        elif newPos[0] > self.screen_size[0] - self.rect.width:
-            self.pos[0] = self.screen_size[0] - self.rect.width
+        buffer = 30 
+        if newPos[0] < buffer:
+            self.pos[0] = buffer
+        elif newPos[0] > self.screen_size[0] - self.rect.width - buffer:
+            self.pos[0] = self.screen_size[0] - self.rect.width - buffer
         else:
             self.pos[0] = newPos[0]
         
-        if newPos[1] < 0:
-            self.pos[1] = 0
-        elif newPos[1] > self.screen_size[1]-self.rect.height:
-            self.pos[1] = self.screen_size[1]-self.rect.width
+        if newPos[1] < buffer:
+            self.pos[1] = buffer
+        elif newPos[1] > self.screen_size[1] - self.rect.height - buffer:
+            self.pos[1] = self.screen_size[1] - self.rect.height - buffer
         else:
             self.pos[1] = newPos[1]
             
