@@ -7,9 +7,11 @@ def normalize_vector(vector):
         return [0, 0]    
     pythagoras = math.sqrt(vector[0]*vector[0] + vector[1]*vector[1])
     return (vector[0] / pythagoras, vector[1] / pythagoras)
+
 class Player( pygame.sprite.Sprite):
     projectiles = pygame.sprite.Group()
     coins = pygame.sprite.Group()
+    
     def __init__(self, pos: tuple[float, float], screen_size, weapon_name: str = 'landmine'):
         super().__init__()
         self.weapon = WeaponFactory.get(weapon_name)
@@ -20,10 +22,9 @@ class Player( pygame.sprite.Sprite):
         self.movement_vector = [0, 0]
         self.alive = True
         self.health = 100
-        self.speed = 1.5
+        self.speed = 1.8
         self.collected_coins = 0
         self.last_shot_time = pygame.time.get_ticks()
-
 
     def move(self, tDelta):
         self.movement_vector = normalize_vector(self.movement_vector)

@@ -10,7 +10,7 @@ from Weapon import WeaponFactory
 import cProfile
 
 pygame.init()
-size    = (800, 600)
+size = (800, 600)
 BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
 scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
@@ -19,19 +19,15 @@ healthRender = healthFont.render('z', True, pygame.Color('red'))
 pygame.display.set_caption("Top Down")
 
 done = False
-hero = pygame.sprite.GroupSingle(Player((400, 300), screen.get_size()))
+hero = pygame.sprite.GroupSingle(Player((screen.get_size()[0]/2, screen.get_size()[1]/2), screen.get_size()))
 ranged_enemies = pygame.sprite.Group()
 melee_enemies = pygame.sprite.Group()
 lastEnemy = 0
 score = 0
 clock = pygame.time.Clock()
 
-#global key_repeat_enabled, key_repeat_delay, key_repeat_interval, last_key_event_time
-
-key_repeat_enabled = False
-key_repeat_delay = 500  # milliseconds
-key_repeat_interval = 50  # milliseconds
-last_key_event_time = 0
+toggle_enabled = False
+toggle_interval = 50
 
 MAX_ENEMIES = 50
 
@@ -95,7 +91,12 @@ def process_keys(keys, hero):
     if keys[pygame.K_d] or keys[pygame.K_DOWN]:
         hero.sprite.movement_vector[0] += 1
 
-    if keys[pygame.K_SPACE]:
+    if toggle_enabled:
+        hero.sprite.attack(pygame.mouse.get_pos())
+
+    if keys[pygame.K_SPACE] and keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+        toggle_enabled = not toggle_enabled
+    elif not toggle_enabled and keys[pygame.K_SPACE]:
         hero.sprite.attack(pygame.mouse.get_pos())
 
     # if keys[pygame.K_1]:
@@ -187,11 +188,6 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:       
-                # Enable key repeat for spacebar
-                key_repeat_enabled = True
-                last_key_event_time = pygame.time.get_ticks()
     
     if keys[pygame.K_r]:
         game_loop()
