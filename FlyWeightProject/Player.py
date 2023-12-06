@@ -53,8 +53,9 @@ class Player( pygame.sprite.Sprite):
         Player.projectiles.add(proj)
 
     def attack(self, target_pos):
-        self.weapon.attack(self, target_pos, self.last_shot_time)
-        self.last_shot_time = pygame.time.get_ticks()
+        did_attack = self.weapon.attack(self, target_pos, self.last_shot_time)
+        if did_attack:
+            self.last_shot_time = pygame.time.get_ticks()
     
     def collide(self, damage):
         self.health -= damage

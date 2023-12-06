@@ -52,6 +52,9 @@ class Shotgun(Weapon):
                             proj_dir
                         )
                     )
+            return True
+        return False
+        
                 
                 
                 
@@ -79,6 +82,8 @@ class MachineGun(Weapon):
                     user.pos,
                     direction)
             )
+            return True
+        return False
             
 class Rifle(Weapon):
     def __init__(self):
@@ -100,6 +105,8 @@ class Rifle(Weapon):
                     direction
                 )
             )
+            return True
+        return False
         
                 
 class Melee(Weapon):
@@ -138,6 +145,8 @@ class MissileLauncher(Weapon):
                     direction
                 )
             )
+            return True
+        return False
             
 
 class LandMine(Weapon):
@@ -157,6 +166,8 @@ class LandMine(Weapon):
                     user.pos
                 )
             )
+            return True
+        return False
             
 class WeaponFactory:
     __weapons = {
