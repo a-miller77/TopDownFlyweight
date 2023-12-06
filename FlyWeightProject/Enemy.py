@@ -12,6 +12,7 @@ class EnemyFlyweight:
         self.name = name
         self.image = image
         self.dead_image = pygame.transform.rotate(self.image, 90)
+        self.inverted_image = pygame.transform.flip(self.image, True, False)
         self.rect = image.get_rect()
         self.weapon = WeaponFactory.get(weapon_name)
         self.speed = speed
@@ -67,8 +68,11 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
         flyweight = EnemyFactory.get(name)
         self.image = flyweight.image
+        self.regular_image = flyweight.image
         self.dead_image = flyweight.dead_image
+        
         self.rect = self.image.get_rect()
+        self.inverted_image = flyweight.inverted_image
         #self.radius = flyweight.radius
         self.speed = flyweight.speed
         self.weapon = flyweight.weapon
@@ -88,6 +92,12 @@ class Enemy(pygame.sprite.Sprite):
             self.pos[0] += self.movement_vector[0] * self.speed * tDelta
             self.pos[1] += self.movement_vector[1] * self.speed * tDelta
             
+            # add code to check what direction the player is in and flip the image accordingly
+            if self.movement_vector[0] > 0:
+                self.image = self.inverted_image
+            else:
+                self.image = self.regular_image
+                            
             # Collision test with other enemies
             self.movement_vector = [0, 0]
             for sprite in enemies:
@@ -103,7 +113,7 @@ class Enemy(pygame.sprite.Sprite):
             
             self.rect.topleft = self.pos
         else:
-            if pygame.time.get_ticks() - 500 >= self.last_shot_time:
+            if pygame.time.get_ticks() - 300 >= self.last_shot_time:
                 self.death()
 
     def attack(self, target_pos):

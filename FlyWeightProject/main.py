@@ -19,9 +19,6 @@ background = pygame.image.load("./Images/background.png")
 background = pygame.transform.scale(background, size)
 background = background.convert()
 
-
-
-
 try:
     font = pygame.font.Font("Roboto-Regular.ttf", 25)
 except OSError:
