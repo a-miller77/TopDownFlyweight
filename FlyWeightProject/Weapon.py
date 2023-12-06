@@ -134,7 +134,7 @@ class MissileLauncher(Weapon):
             user.projectiles.add(
                 Bomb(
                     'missile',
-                    user.pos,
+                    user,
                     direction
                 )
             )
