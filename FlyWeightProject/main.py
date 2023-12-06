@@ -16,12 +16,12 @@ BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Top Down")
 
-# Create background
-background = pygame.Surface(screen.get_size())
-background.fill(BGCOLOR)
-# set an image as background
-background = pygame.image.load("../Images/background.png")
+# set an image for the background
+background = pygame.image.load("./Images/background.png")
+background = pygame.transform.scale(background, size)
 background = background.convert()
+
+
 
 try:
     font = pygame.font.Font("Roboto-Regular.ttf", 20)
