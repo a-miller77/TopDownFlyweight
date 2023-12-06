@@ -12,9 +12,7 @@ import cProfile
 pygame.init()
 pygame.display.set_caption("Pew Pew Game MF")
 size = (1280, 800)
-BGCOLOR = (255, 255, 255)
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Top Down")
 
 # set an image for the background
 background = pygame.image.load("./Images/background.png")
@@ -23,17 +21,17 @@ background = background.convert()
 
 
 
+
 try:
-    font = pygame.font.Font("Roboto-Regular.ttf", 20)
+    font = pygame.font.Font("Roboto-Regular.ttf", 25)
 except OSError:
     # If the font file is not available, the default will be used.
-    font = pygame.font.Font(pygame.font.get_default_font(), 20)
+    font = pygame.font.Font(pygame.font.get_default_font(), 25)
 
-# display the hero health on the top left of the screen
-hero_health_text = font.render("Hero Health: ", True, (0, 0, 0))
-# display the hero score on the top right of the screen
-hero_score_text = font.render("Score: ", True, (0, 0, 0))
-
+# display the hero health on the top left of the screen with white text
+hero_health_text = font.render("Hero Health: ", True, (225, 225, 225))
+# display the hero score on the top right of the screen with white text
+hero_score_text = font.render("Score: ", True, (225, 225, 225))
 
 done = False
 hero = pygame.sprite.GroupSingle(Player((screen.get_size()[0]/2, screen.get_size()[1]/2), screen.get_size()))
@@ -119,12 +117,18 @@ def process_keys(keys, hero, toggle_enabled):
     elif not toggle_enabled and keys[pygame.K_SPACE]:
         hero.sprite.attack(pygame.mouse.get_pos())
 
-    # if keys[pygame.K_1]:
-    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
-    # if keys[pygame.K_2]:
-    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[1]
-    # if keys[pygame.K_3]:
-    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
+    if keys[pygame.K_1]:
+        hero.sprite.weapon = WeaponFactory.get('shotgun')
+    if keys[pygame.K_2]:
+        hero.sprite.weapon = WeaponFactory.get('machine_gun')
+    if keys[pygame.K_3]:
+        hero.sprite.weapon = WeaponFactory.get('rifle')
+    if keys[pygame.K_4]:
+        hero.sprite.weapon = WeaponFactory.get('melee')
+    if keys[pygame.K_5]:
+        hero.sprite.weapon = WeaponFactory.get('missilelauncher')
+    if keys[pygame.K_6]:
+        hero.sprite.weapon = WeaponFactory.get('landminedddddddddddd')
         
 def process_mouse(mouse, hero):
     if mouse[0]:
@@ -146,7 +150,6 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
-        screen.fill(BGCOLOR)
         
         process_keys(keys, hero, toggle_enabled)
         process_mouse(mouse, hero)
@@ -176,12 +179,14 @@ def game_loop():
                 ranged_enemies.add(enemy)
 
             last_enemy_spawn = currentTime
+        # Draw the background
+        screen.blit(background, (0, 0))
         
         move_entities(hero, melee_enemies, ranged_enemies, clock.get_time()/10)
         render_entities(hero, melee_enemies, ranged_enemies)
         
-        hero_health_text = font.render(f"Hero Health: {hero.sprite.health}", True, (0, 0, 0))
-        hero_score_text = font.render(f"Score: {hero.sprite.collected_coins}", True, (0, 0, 0))
+        hero_health_text = font.render(f"Hero Health: {hero.sprite.health}", True, (225, 225, 225))
+        hero_score_text = font.render(f"Score: {hero.sprite.collected_coins}", True, (225, 225, 225))
         # display the hero health on the bottom of the screen
         draw_centered_surface(screen, hero_health_text, screen.get_height() - hero_health_text.get_height())
         draw_centered_surface(screen, hero_score_text, 0)
