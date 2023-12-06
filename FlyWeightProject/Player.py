@@ -15,7 +15,7 @@ class Player( pygame.sprite.Sprite):
     def __init__(self, pos: tuple[float, float], screen_size, weapon_name: str = 'landmine'):
         super().__init__()
         self.weapon = WeaponFactory.get(weapon_name)
-        self.image = pygame.transform.scale(pygame.image.load(".\Images\player.png"), (40, 40*1.29))
+        self.image = pygame.transform.scale(pygame.image.load(".\Images\player.png"), (35, 35*1.29))
         self.rect = self.image.get_rect()
         self.screen_size = screen_size
         self.pos = list(pos)

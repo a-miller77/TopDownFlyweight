@@ -41,13 +41,9 @@ lastEnemy = 0
 score = 0
 clock = pygame.time.Clock()
 
-toggle_enabled = False
-toggle_interval = 50
-
 MAX_ENEMIES = 50
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
-    print("tick")
     hero.sprite.move(timeDelta)
 
     for enemy in melee_enemies:
@@ -64,7 +60,7 @@ def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
         proj.move(screen.get_size(), timeDelta) #TODO
         if pygame.sprite.spritecollide(proj, hero, False):
             proj.collide()
-            hero.collide(proj.damage)
+            hero.sprite.collide(proj.damage)
 
     for proj in Player.projectiles:
         proj.move(screen.get_size(), timeDelta) #TODO
@@ -72,7 +68,6 @@ def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
         ranged_enemies_hit = pygame.sprite.spritecollide(proj, ranged_enemies, False)
 
         for enemy in melee_enemies_hit:
-            #print("Hit!")
             enemy.collide(proj.damage)
 
         for enemy in ranged_enemies_hit:
@@ -99,7 +94,7 @@ def draw_centered_surface(screen, surface, y):
     
 
     
-def process_keys(keys, hero, toggle_enabled):
+def process_keys(keys, hero):
     if keys[pygame.K_w] or keys[pygame.K_UP]:
         hero.sprite.movement_vector[1] -= 1
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
@@ -108,15 +103,7 @@ def process_keys(keys, hero, toggle_enabled):
         hero.sprite.movement_vector[1] += 1
     if keys[pygame.K_d] or keys[pygame.K_DOWN]:
         hero.sprite.movement_vector[0] += 1
-
-    if toggle_enabled:
-        hero.sprite.attack(pygame.mouse.get_pos())
-
-    if keys[pygame.K_SPACE] and keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-        toggle_enabled = not toggle_enabled
-    elif not toggle_enabled and keys[pygame.K_SPACE]:
-        hero.sprite.attack(pygame.mouse.get_pos())
-
+    
     if keys[pygame.K_1]:
         hero.sprite.weapon = WeaponFactory.get('shotgun')
     if keys[pygame.K_2]:
@@ -124,11 +111,9 @@ def process_keys(keys, hero, toggle_enabled):
     if keys[pygame.K_3]:
         hero.sprite.weapon = WeaponFactory.get('rifle')
     if keys[pygame.K_4]:
-        hero.sprite.weapon = WeaponFactory.get('melee')
-    if keys[pygame.K_5]:
         hero.sprite.weapon = WeaponFactory.get('missilelauncher')
-    if keys[pygame.K_6]:
-        hero.sprite.weapon = WeaponFactory.get('landminedddddddddddd')
+    if keys[pygame.K_5]:
+        hero.sprite.weapon = WeaponFactory.get('landmine')
         
 def process_mouse(mouse, hero):
     if mouse[0]:
@@ -151,7 +136,7 @@ def game_loop():
             if event.type == pygame.QUIT:
                 return True
         
-        process_keys(keys, hero, toggle_enabled)
+        process_keys(keys, hero)
         process_mouse(mouse, hero)
         
         # Enemy spawning process

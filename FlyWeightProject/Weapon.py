@@ -43,12 +43,19 @@ class Shotgun(Weapon):
             for proj in range(self.projectiles_count):
                 theta = math.radians(arc_difference*proj - self.spread_arc/2)
                 proj_dir = super().rotate_vector(direction, theta)
-                user.projectiles.add(
-                Projectile(
-                    'bullet',
-                    user.pos,
-                    direction)
-            )
+                
+                for i in range(6):
+                    user.projectiles.add(
+                        Projectile(
+                            'bullet',
+                            user.pos,
+                            proj_dir
+                        )
+                    )
+                
+                
+                
+                
 
 class MachineGun(Weapon):
     def __init__(self):
@@ -107,7 +114,8 @@ class Melee(Weapon):
             last_shot_time = current_time
             distance_to_player = math.dist(user.pos, pos)
             if distance_to_player <= self.melee_range:
-                return self.damage
+                return 10
+        return 0
 
 class MissileLauncher(Weapon):
     def __init__(self):
@@ -124,7 +132,7 @@ class MissileLauncher(Weapon):
             last_shot_time = current_time
             # proj_dir = super().rotate_vector(direction, 0)
             user.projectiles.add(
-                Projectile(
+                Bomb(
                     'missile',
                     user.pos,
                     direction
@@ -144,7 +152,7 @@ class LandMine(Weapon):
             last_shot_time = current_time
             user.projectiles.add(
                 Bomb(
-                    'bomb',
+                    'landmine',
                     user,
                     user.pos
                 )

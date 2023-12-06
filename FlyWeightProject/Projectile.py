@@ -14,7 +14,7 @@ class ProjectileFlyweight():
 class ProjectileFactory:
     __projectiles = {
         'bullet': ProjectileFlyweight(name='bullet', path='projectile', speed=0.03, lifetime=1000, damage=3, pierce=0, image_size=(15,15)),
-        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', path='projectile', speed=0.05, lifetime=1500, damage=10, pierce=99, image_size=(15,15)),
+        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', path='projectile', speed=0.05, lifetime=1500, damage=10, pierce=99999, image_size=(15,15)),
         'explosion': ProjectileFlyweight(name='explosion', path='explosion', speed=0, lifetime=100, damage=3, pierce=0, image_size=(200*0.96,200)),
         'landmine': ProjectileFlyweight(name='bomb', path='landmine', speed=0, lifetime=700, damage=0, pierce=0, image_size=(20,20)),
         'missile': ProjectileFlyweight(name='bomb', path='missile', speed=0.08, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
@@ -65,7 +65,7 @@ class Projectile(pygame.sprite.Sprite):
 
 class Bomb(Projectile):
     def __init__(self, name: str, source, target: tuple):
-        super().__init__("bomb", source.pos, target)
+        super().__init__(name, source.pos, target)
         self.player = source
         
     def collide(self):
@@ -93,7 +93,7 @@ class Bomb(Projectile):
 
 class Explosion(Projectile):
     def __init__(self, name, source, target):
-        super().__init__("explosion", source, source)
+        super().__init__(name, source, source)
         self.rect = self.rect.move(-self.rect.height/2, -self.rect.width/2)
     
     def collide(self):
