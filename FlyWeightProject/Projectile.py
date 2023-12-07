@@ -1,31 +1,108 @@
 import pygame
-import numpy as np
+from typing import Any
+
+class ProjectileFlyweight():
+    def __init__(self, name: str, path: str, speed: float, lifetime: int, damage: int, pierce: int , image_size: tuple):
+        self.damage = damage
+        self.pierce = pierce   
+        self.image = pygame.transform.scale(pygame.image.load(f".\Images\{path}.png"), image_size)
+        self.lifetime = lifetime
+        self.name = name
+        self.speed = speed
+        self.rect = self.image.get_rect()      
+
+class ProjectileFactory:
+    __projectiles = {
+        'bullet': ProjectileFlyweight(name='bullet', path='projectile', speed=0.03, lifetime=1000, damage=3, pierce=0, image_size=(10,10)),
+        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', path='projectile', speed=0.05, lifetime=1500, damage=1, pierce=6, image_size=(10,10)),
+        'explosion': ProjectileFlyweight(name='explosion', path='explosion', speed=0, lifetime=100, damage=100, pierce=0, image_size=(100,100)),
+        'bomb': ProjectileFlyweight(name='bomb', path='landmine', speed=0, lifetime=1000, damage=0, pierce=0, image_size=(10,10)),
+        #'landmine': ProjectileFlyweight(name='landmine', path='bomb', speed=0, lifetime=1000, damage=1, pierce=0, image_size=(5,5)),
+    }
+    #image = pygame.transform.scale(pygame.image.load(".\Images\projectile.png"), (5,5))
+
+    @staticmethod
+    def get(name):
+        return ProjectileFactory.__projectiles.get(name)
+
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, source, target, speed, lifetime, color):
+    def __init__(self, name: str, source: tuple, target: tuple):
         super().__init__()
-        self.image = pygame.Surface([4, 4])
-        self.image.set_colorkey(pygame.Color('black'))
-        self.rect = self.image.get_rect(x=source[0], y=source[1])
-        pygame.draw.circle(self.image, color,
-                           (self.rect.width // 2, self.rect.height // 2),
-                           self.rect.width // 2)
-        
+        self.created_at = pygame.time.get_ticks()
+        self.movement_vector = [target[0], target[1]]
         self.pos = [source[0], source[1]]
-        self.movementVector = [target[0], target[1]]
-        self.speed = speed
-        self.lifetime = lifetime
-        self.createdAt = pygame.time.get_ticks()
-        #self.bloat = np.arange(9999999)
-        
-    def move(self, surfaceSize, tDelta):
-        if pygame.time.get_ticks() > self.createdAt + self.lifetime:
+
+        flyweight = ProjectileFactory.get(name)
+        self.image = flyweight.image
+        self.lifetime = flyweight.lifetime
+        self.pierce = flyweight.pierce
+        self.speed = flyweight.speed       
+        self.damage = flyweight.damage 
+        self.rect = self.image.get_rect(topleft=self.pos)
+    
+    def collide(self):
+        if self.pierce < 0:
             self.kill()
-        self.pos[0] += self.movementVector[0] * self.speed * tDelta
-        self.pos[1] += self.movementVector[1] * self.speed * tDelta
+        else:
+            self.pierce -= 1
+    
+    def move(self, surfaceSize, tDelta):
+        if pygame.time.get_ticks() > self.created_at + self.lifetime:
+            self.kill()
+        self.pos[0] += self.movement_vector[0] * self.speed * tDelta
+        self.pos[1] += self.movement_vector[1] * self.speed * tDelta
         self.rect.topleft = self.pos
         if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
            self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
-            self.kill()
+               self.collide()
+            
     def render(self, surface):
         surface.blit(self.image, self.pos)
+        
+    
+
+
+class Bomb(Projectile):
+    def __init__(self, name: str, source, target: tuple):
+        super().__init__("bomb", source.pos, target)
+        self.player = source
+        
+    def collide(self):
+        #self.explode()
+        pass
+        
+    def explode(self):
+        self.player.add_to_static_projectiles(Explosion("explosion", self.pos, self.pos))
+        self.kill()
+        
+    def move(self, surfaceSize, tDelta):
+        if pygame.time.get_ticks() > self.created_at + self.lifetime:
+            self.explode()
+            
+        self.pos[0] += self.movement_vector[0] * self.speed * tDelta
+        self.pos[1] += self.movement_vector[1] * self.speed * tDelta
+        self.rect.topleft = self.pos
+        if self.pos[0] > surfaceSize[0] or self.pos[0] < 0  or \
+           self.pos[1] > surfaceSize[1] or self.pos[1] < 0:
+            self.explode()
+    
+    def render(self, surface):
+        # TODO: render explosion
+        super().render(surface)
+
+class Explosion(Projectile):
+    def __init__(self, name, source, target):
+        super().__init__("explosion", source, source)
+        self.rect = self.rect.move(-50, -50)
+    
+    def collide(self):
+        pass
+
+    def move(self, surfaceSize, tDelta):
+        if pygame.time.get_ticks() > self.created_at + self.lifetime:
+            self.kill()
+
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        return super().update(*args, **kwargs)
+

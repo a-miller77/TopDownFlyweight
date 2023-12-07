@@ -1,7 +1,7 @@
-import pygame 
+import pygame
 import math
 import random
-from Projectile import Projectile
+from Projectile import Projectile, Bomb
 
 class Weapon():
     def __init__(self):
@@ -28,6 +28,7 @@ class Weapon():
 class Shotgun(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load(".\Images\shotgun.png"), (40,40))
         self.weapon_cooldown = 550
         self.spread_arc = 60
         self.projectilesCount = 6
@@ -49,6 +50,7 @@ class Shotgun(Weapon):
 class MachineGun(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load(".\Images\machinegun.png"), (40,40))
         self.weapon_cooldown = 100
         self.spread_arc = 25
         
@@ -60,18 +62,21 @@ class MachineGun(Weapon):
             self.lastShot = current_time
             theta = math.radians(random.random()*self.spread_arc - self.spread_arc/2)
             proj_dir = super().rotate_vector(direction, theta)   
-            user.projectiles.add(Projectile(
-                user.pos,
-                super().normalize_vector(proj_dir),
-                speed=6, 
-                lifetime=5000,
-                color=(194, 54, 16)))
+
+            user.projectiles.add(
+                Projectile(
+                    'bullet',
+                    user.pos,
+                    proj_dir)
+            )
+            
 class Rifle(Weapon):
     def __init__(self):
         super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("./Images/rifle.png"), (40,40))
         self.weapon_cooldown = 300
         
-    def attack(self, user, pos):
+    def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.weapon_cooldown:
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
@@ -91,8 +96,24 @@ class Melee(Weapon):
     def __init__(self):
         super().__init__()
         self.weapon_cooldown = 100
-        self.melee_range = 30  # Adjust the melee range as needed
+        self.melee_range = 10  # Adjust the melee range as needed
 
+    def attack(self, user, pos, last_shot_time):
+        current_time = pygame.time.get_ticks()
+        if current_time - last_shot_time > self.weapon_cooldown:
+            self.last_shot_time = current_time
+            distance_to_player = math.dist(user.pos, pos)
+            if distance_to_player <= self.melee_range:
+                return self.damage
+        
+        return 0
+
+class MissileLauncher(Weapon):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("./Images/rocketLauncher.png"),(40,40))
+        self.weapon_cooldown = 800
+        
     def attack(self, user, pos, all_sprites):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.weapon_cooldown:
@@ -101,66 +122,42 @@ class Melee(Weapon):
             ) if pos != user.pos else (1, 1)
             self.last_shot = current_time
             proj_dir = super().rotate_vector(direction, 0)
-            
-            # Check for collision with projectiles within melee range
-            for sprite in all_sprites:
-                if (
-                    isinstance(sprite, Projectile)
-                    and sprite != user
-                    and math.sqrt(
-                        (user.pos[0] - sprite.pos[0]) ** 2
-                        + (user.pos[1] - sprite.pos[1]) ** 2
-                    )
-                    <= self.melee_range
-                ):
-                    # Add code here to apply melee effect to the enemy projectile.
-                    # For example, you could remove the projectile or decrease its health.
-                    sprite.kill()
-            
-        
-class MissileLauncher(Weapon):
-    def __init__(self):
-        super().__init__()
-        self.weapon_cooldown = 800
-        
-    def attack(self, user, pos):
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_shot > self.weapon_cooldown:
-            direction = (
-                pos[0] - user.pos[0], pos[1] - user.pos[1]
-            ) if pos != user.pos else (1, 1)
-            self.last_shot = current_time
-            proj_dir = super().rotate_vector(direction, 0)
             bomb = Bomb(
+                'bomb',
                 user.pos,
-                super().normalize_vector(proj_dir),
-                speed=4,
-                lifetime=3000,
-                color=(0, 0, 255)  # Blue color for bombs
+                proj_dir
             )
             user.projectiles.add(bomb)
             bomb_group = pygame.sprite.Group(bomb)
             bomb.explode(user, bomb_group)
+
+class LandMine(Weapon):
+    def __init__(self):
+        super().__init__()
+        self.weapon_cooldown = 200
+        self.explosion_radius = 50
         
-class Bomb(Projectile):
-    def __init__(self, pos, direction, speed, lifetime, color):
-        super().__init__(pos, direction, speed, lifetime, color)
-        self.explosion_radius = 30
-        
-    def explode(self, surface, all_sprites):
-        # Add explosion effect code here
-        pygame.draw.circle(
-            surface, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.explosion_radius
-        )
-        # You can add additional effects or damage logic based on the surrounding entities
-        for sprite in all_sprites:
-            if (
-                isinstance(sprite, Projectile)
-                and sprite != self
-                and math.sqrt(
-                    (self.pos[0] - sprite.pos[0]) ** 2
-                    + (self.pos[1] - sprite.pos[1]) ** 2
+    def attack(self, user, pos, last_shot_time):
+        current_time = pygame.time.get_ticks()
+        if current_time - last_shot_time > self.weapon_cooldown:
+            user.projectiles.add(
+                Bomb(
+                    'bomb',
+                    user,
+                    user.pos
                 )
-                <= self.explosion_radius
-            ):
-                sprite.kill()
+            )
+            
+class WeaponFactory:
+    __weapons = {
+        'shotgun': Shotgun(),
+        'machinegun': MachineGun(),
+        'rifle': Rifle(),
+        'melee': Melee(),
+        'missilelauncher': MissileLauncher(),
+        'landmine': LandMine()
+    }
+    
+    @staticmethod
+    def get(name):
+        return WeaponFactory.__weapons.get(name)
