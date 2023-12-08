@@ -37,7 +37,8 @@ class Projectile(pygame.sprite.Sprite):
         self.lifetime = flyweight.lifetime
         self.pierce = flyweight.pierce
         self.speed = flyweight.speed       
-        self.damage = flyweight.damage 
+        self.damage = flyweight.damage
+        
         self.rect = self.image.get_rect(topleft=self.pos)
     
     def collide(self):
