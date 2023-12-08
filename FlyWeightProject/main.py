@@ -25,11 +25,6 @@ except OSError:
     # If the font file is not available, the default will be used.
     font = pygame.font.Font(pygame.font.get_default_font(), 25)
 
-# display the hero health on the top left of the screen with white text
-hero_health_text = font.render("Hero Health: ", True, (225, 225, 225))
-# display the hero score on the top right of the screen with white text
-hero_score_text = font.render("Score: ", True, (225, 225, 225))
-
 done = False
 hero = pygame.sprite.GroupSingle(Player((screen.get_size()[0]/2, screen.get_size()[1]/2), screen.get_size()))
 ranged_enemies = pygame.sprite.Group()
@@ -147,6 +142,7 @@ def game_loop():
         if hero.sprite.health <= 0:
             hero.sprite.alive = False
             
+            
         
         process_keys(keys, hero)
         process_mouse(mouse, hero)
@@ -184,6 +180,7 @@ def game_loop():
         
         hero_health_text = font.render(f"Hero Health: {hero.sprite.health}", True, (225, 225, 225))
         hero_score_text = font.render(f"Score: {hero.sprite.collected_coins}", True, (225, 225, 225))
+        
         # display the hero health on the bottom of the screen
         draw_centered_surface(screen, hero_health_text, screen.get_height() - hero_health_text.get_height())
         draw_centered_surface(screen, hero_score_text, 0)
@@ -201,7 +198,11 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    
+    # diplay the game over text press 'r' to restart
+    game_over_text = font.render("Game Over! Press 'r' to restart", True, (225, 0, 0))
+    # draw the game over text in the center of the screen
+    draw_centered_surface(screen, game_over_text, screen.get_height()/2 - game_over_text.get_height()/2)
+
     if keys[pygame.K_r]:
         game_loop()
 pygame.quit()
