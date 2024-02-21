@@ -55,10 +55,6 @@ class Shotgun(Weapon):
             return True
         return False
         
-                
-                
-                
-                
 
 class MachineGun(Weapon):
     def __init__(self):
@@ -73,14 +69,14 @@ class MachineGun(Weapon):
             direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
                 if pos != user.pos else (1, 1)
             last_shot_time = current_time
-            # theta = math.radians(random.random()*self.spread_arc - self.spread_arc/2)
-            # proj_dir = super().rotate_vector(direction, theta)   
+            theta = math.radians(random.random()*self.spread_arc - self.spread_arc/2)
+            proj_dir = super().rotate_vector(direction, theta)   
 
             user.projectiles.add(
                 Projectile(
                     'bullet',
                     user.pos,
-                    direction)
+                    proj_dir)
             )
             return True
         return False
@@ -89,7 +85,7 @@ class Rifle(Weapon):
     def __init__(self):
         super().__init__()
         self.image = pygame.transform.scale(pygame.image.load("./Images/rifle.png"), (40,40))
-        self.weapon_cooldown = 300
+        self.weapon_cooldown = 500
         
     def attack(self, user, pos, last_shot_time):
         current_time = pygame.time.get_ticks()
@@ -100,14 +96,39 @@ class Rifle(Weapon):
             # proj_dir = super().rotate_vector(direction, 0)   
             user.projectiles.add(
                 Projectile(
-                    'bullet',
+                    'piercing_bullet',
                     user.pos,
                     direction
                 )
             )
             return True
         return False
+
+class Pistol(Weapon):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("./Images/rifle.png"), (40,40))
+        self.weapon_cooldown = 1000
+        self.spread_arc = 15
         
+        
+    def attack(self, user, pos, last_shot_time):
+        current_time = pygame.time.get_ticks()
+        if current_time - last_shot_time > self.weapon_cooldown:
+            direction = (pos[0] - user.pos[0], pos[1] - user.pos[1]) \
+                if pos != user.pos else (1, 1)
+            last_shot_time = current_time
+            theta = math.radians(random.random()*self.spread_arc - self.spread_arc/2)
+            proj_dir = super().rotate_vector(direction, theta)   
+            user.projectiles.add(
+                Projectile(
+                    'slow_bullet',
+                    user.pos,
+                    direction
+                )
+            )
+            return True
+        return False
                 
 class Melee(Weapon):
     def __init__(self):
@@ -176,7 +197,8 @@ class WeaponFactory:
         'rifle': Rifle(),
         'melee': Melee(),
         'missilelauncher': MissileLauncher(),
-        'landmine': LandMine()
+        'landmine': LandMine(),
+        'pistol': Pistol()
     }
     
     @staticmethod
