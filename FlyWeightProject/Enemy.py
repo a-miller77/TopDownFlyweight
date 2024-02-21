@@ -8,7 +8,7 @@ from Weapon import WeaponFactory, Weapon
 
 class EnemyFlyweight:
     def __init__(self, name: str, image: pygame.Surface, weapon_name: str, speed: float, 
-                 default_health: int):
+                 default_health: int, value: int):
         self.name = name
         self.image = image
         self.dead_image = pygame.transform.rotate(self.image, 90)
@@ -16,6 +16,7 @@ class EnemyFlyweight:
         self.rect = image.get_rect()
         self.weapon = WeaponFactory.get(weapon_name)
         self.speed = speed
+        self.value = value
         self.default_health = default_health
 
 class EnemyFactory:
@@ -27,7 +28,8 @@ class EnemyFactory:
                                     ), 
                                 weapon_name='melee',
                                 speed = 1, 
-                                default_health=2),
+                                default_health=2,
+                                value=1),
         'medium': EnemyFlyweight(name='medium', 
                                 image= pygame.transform.scale(
                                     pygame.image.load('./Images/mediumEnemy.png'), 
@@ -35,7 +37,8 @@ class EnemyFactory:
                                     ), 
                                 weapon_name='melee',
                                 speed = 0.7, 
-                                default_health=10),
+                                default_health=10,
+                                value=3),
         'large': EnemyFlyweight(name='large', 
                                 image= pygame.transform.scale(
                                     pygame.image.load('./Images/largeEnemy.png'), 
@@ -43,7 +46,17 @@ class EnemyFactory:
                                     ), 
                                 weapon_name='melee',
                                 speed = 0.4, 
-                                default_health=45)
+                                default_health=45,
+                                value=10),
+        'small_shooter': EnemyFlyweight(name='small_shooter', 
+                                image= pygame.transform.scale(
+                                    pygame.image.load('./Images/smallShootingEnemy.png'), 
+                                    (40,40)
+                                    ), 
+                                weapon_name='pistol',
+                                speed = 1, 
+                                default_health=2,
+                                value=2),
     }
 
     @staticmethod
@@ -53,8 +66,10 @@ class EnemyFactory:
     @staticmethod
     def get_random():
         choices = []
-        for _ in range(15):
+        for _ in range(12):
             choices.append('small')
+        for _ in range(3):
+            choices.append('small_shooter')
         for _ in range(4):
             choices.append('medium')
         for _ in range(1):
@@ -79,6 +94,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.name = name
         self.health = int(flyweight.default_health)
+        self.value = flyweight.value
         self.movement_vector = [0, 0]
         self.pos = list(pos)
         self.last_shot_time = pygame.time.get_ticks()
@@ -119,24 +135,32 @@ class Enemy(pygame.sprite.Sprite):
     def attack(self, target_pos):
         if not self.dead:
             damage = self.weapon.attack(self, pos=target_pos, last_shot_time = self.last_shot_time)
-            if damage == 10:
+            if not damage == 0:
                 self.last_shot_time = pygame.time.get_ticks()
             return damage
 
     def collide(self, damage):
         self.health -= damage
-        if self.health < 0:
+        if self.health < 0 and not self.dead:
             self.dead = True
             self.image = self.dead_image
             self.last_shot_time = pygame.time.get_ticks()
     
     def death(self):
         #print("Enemy Dead")
-        for _ in range(5):
-            x = self.pos[0] + random.randrange(-10, 10)
-            y = self.pos[1] + random.randrange(-10, 10)
-            Player.coins.add(Coin(1, (x, y)))
+        coin_sizes = Coin.get_coin_sizes()
+        coin_sizes.sort(reverse=True)
+
+        for coin_value in coin_sizes:
+            while self.value >= coin_value:
+                self.value -= coin_value
+                self.create_coin(coin_value) 
         self.kill()
+
+    def create_coin(self, value):
+        x = self.pos[0] + random.randrange(-10, 10)
+        y = self.pos[1] + random.randrange(-10, 10)
+        Player.coins.add(Coin(value, (x, y)))
 
     def render(self, surface):
         surface.blit(self.image, self.pos)
