@@ -14,9 +14,10 @@ class ProjectileFlyweight():
 class ProjectileFactory:
     __projectiles = {
         'bullet': ProjectileFlyweight(name='bullet', image_path='projectile', speed=0.03, lifetime=1000, damage=3, pierce=False, image_size=(15,15)),
-        'PiercingBullet': ProjectileFlyweight(name='PiercingBullet', image_path='projectile', speed=0.05, lifetime=1500, damage=10, pierce=True, image_size=(15,15)),
-        'explosion': ProjectileFlyweight(name='explosion', image_path='explosion', speed=0, lifetime=100, damage=3, pierce=False, image_size=(200*0.96,200)),
-        'landmine': ProjectileFlyweight(name='bomb', image_path='landmine', speed=0, lifetime=700, damage=3, pierce=False, image_size=(20,20)),
+        'slow_bullet': ProjectileFlyweight(name='bullet', image_path='projectile', speed=0.01, lifetime=1000, damage=2, pierce=False, image_size=(15,15)),
+        'piercing_bullet': ProjectileFlyweight(name='piercing_bullet', image_path='projectile', speed=0.05, lifetime=5000, damage=10, pierce=True, image_size=(15,15)),
+        'explosion': ProjectileFlyweight(name='explosion', image_path='explosion', speed=0, lifetime=100, damage=2, pierce=False, image_size=(200*0.96,200)),
+        'landmine': ProjectileFlyweight(name='bomb', image_path='landmine', speed=0, lifetime=700, damage=0, pierce=False, image_size=(20,20)),
         'missile': ProjectileFlyweight(name='bomb', image_path='missile', speed=0.03, lifetime=500, damage=2, pierce=False, image_size=(20,20)),
     }
 
@@ -44,8 +45,6 @@ class Projectile(pygame.sprite.Sprite):
     def collide(self):
         if not self.pierce:
             self.kill()
-        else:
-            pass
     
     def move(self, surfaceSize, tDelta):
         if pygame.time.get_ticks() > self.created_at + self.lifetime:
