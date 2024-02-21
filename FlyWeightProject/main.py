@@ -10,8 +10,8 @@ from Weapon import WeaponFactory
 import cProfile
 
 pygame.init()
-pygame.display.set_caption("Pew Pew Game MF")
-size = (1280, 800)
+pygame.display.set_caption("Pew Pew Game")
+size = (1280, 720)
 screen = pygame.display.set_mode(size)
 
 # set an image for the background
@@ -34,6 +34,7 @@ score = 0
 clock = pygame.time.Clock()
 
 MAX_ENEMIES = 50
+SPAWN_SPEED_DELAY = 400
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
     hero.sprite.move(timeDelta)
@@ -152,7 +153,7 @@ def game_loop():
         
         # Enemy spawning process
         num_enemies = len(ranged_enemies) + len(melee_enemies)
-        if last_enemy_spawn < currentTime - 150 and num_enemies < MAX_ENEMIES:
+        if last_enemy_spawn < currentTime - SPAWN_SPEED_DELAY and num_enemies < MAX_ENEMIES:
             
             enemy_name = EnemyFactory.get_random()
 
