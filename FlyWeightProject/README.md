@@ -1,7 +1,9 @@
 # Top down shooter
 Objective: Survive as long as possible, kill enemies, pick up coins
 
-If you want to play the game, you need to install dependencies first.
+To launch the game, open the `main.exe` file.
+
+If you want to play a modified version of the game or run the jupyter notebook, you need to install dependencies first.
 ```
 pip install -r requirements.txt
 ```
