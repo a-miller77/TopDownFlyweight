@@ -10,33 +10,33 @@ from Weapon import WeaponFactory
 import cProfile
 
 pygame.init()
-size    = (800, 600)
-BGCOLOR = (255, 255, 255)
+pygame.display.set_caption("Pew Pew Game")
+size = (1280, 720)
 screen = pygame.display.set_mode(size)
-scoreFont = pygame.font.Font("../reference_project/fonts/UpheavalPro.ttf", 30)
-healthFont = pygame.font.Font("../reference_project/fonts/OmnicSans.ttf", 50)
-healthRender = healthFont.render('z', True, pygame.Color('red'))
-pygame.display.set_caption("Top Down")
+
+# set an image for the background
+background = pygame.image.load("./Images/background.png")
+background = pygame.transform.scale(background, size)
+background = background.convert()
+
+try:
+    font = pygame.font.Font("Roboto-Regular.ttf", 25)
+except OSError:
+    # If the font file is not available, the default will be used.
+    font = pygame.font.Font(pygame.font.get_default_font(), 25)
 
 done = False
-hero = pygame.sprite.GroupSingle(Player((400, 300), screen.get_size()))
+hero = pygame.sprite.GroupSingle(Player((screen.get_size()[0]/2, screen.get_size()[1]/2), screen.get_size()))
 ranged_enemies = pygame.sprite.Group()
 melee_enemies = pygame.sprite.Group()
 lastEnemy = 0
 score = 0
 clock = pygame.time.Clock()
 
-#global key_repeat_enabled, key_repeat_delay, key_repeat_interval, last_key_event_time
-
-key_repeat_enabled = False
-key_repeat_delay = 500  # milliseconds
-key_repeat_interval = 50  # milliseconds
-last_key_event_time = 0
-
-MAX_ENEMIES = 300
+MAX_ENEMIES = 50
+SPAWN_SPEED_DELAY = 400
 
 def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
-    print("tick")
     hero.sprite.move(timeDelta)
 
     for enemy in melee_enemies:
@@ -53,7 +53,7 @@ def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
         proj.move(screen.get_size(), timeDelta) #TODO
         if pygame.sprite.spritecollide(proj, hero, False):
             proj.collide()
-            hero.collide(proj.damage)
+            hero.sprite.collide(proj.damage)
 
     for proj in Player.projectiles:
         proj.move(screen.get_size(), timeDelta) #TODO
@@ -61,7 +61,6 @@ def move_entities(hero, melee_enemies, ranged_enemies, timeDelta):
         ranged_enemies_hit = pygame.sprite.spritecollide(proj, ranged_enemies, False)
 
         for enemy in melee_enemies_hit:
-            #print("Hit!")
             enemy.collide(proj.damage)
 
         for enemy in ranged_enemies_hit:
@@ -83,6 +82,9 @@ def render_entities(hero, melee_enemies, ranged_enemies):
     Enemy.projectiles.draw(screen)
     melee_enemies.draw(screen)
     ranged_enemies.draw(screen)
+def draw_centered_surface(screen, surface, y):
+    screen.blit(surface, (screen.get_width()/2 - surface.get_width()/2, y))
+    
 
     
 def process_keys(keys, hero):
@@ -97,25 +99,40 @@ def process_keys(keys, hero):
 
     if keys[pygame.K_SPACE]:
         hero.sprite.attack(pygame.mouse.get_pos())
-
-    # if keys[pygame.K_1]:
-    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[0]
-    # if keys[pygame.K_2]:
-    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[1]
-    # if keys[pygame.K_3]:
-    #     hero.sprite.equippedWeapon = hero.sprite.availableWeapons[2]
+    
+    if keys[pygame.K_1]:
+        hero.sprite.weapon = WeaponFactory.get('shotgun')
+    if keys[pygame.K_2]:
+        hero.sprite.weapon = WeaponFactory.get('machine_gun')
+    if keys[pygame.K_3]:
+        hero.sprite.weapon = WeaponFactory.get('rifle')
+    if keys[pygame.K_4]:
+        hero.sprite.weapon = WeaponFactory.get('missilelauncher')
+    if keys[pygame.K_5]:
+        hero.sprite.weapon = WeaponFactory.get('landmine')
         
 def process_mouse(mouse, hero):
     if mouse[0]:
         hero.sprite.attack(pygame.mouse.get_pos())
  
 def game_loop():
+    # reset the hero's health and score
+    hero.sprite.alive = True
+    hero.sprite.health = 100
+    hero.sprite.collected_coins = 0
+    
+    # clear any existing enemies if there are any
+    melee_enemies.empty()
+    ranged_enemies.empty()
+    Enemy.projectiles.empty()
+    Player.projectiles.empty()
+    Player.coins.empty()
+    
     done = False
     # hero = pygame.sprite.GroupSingle(Player(screen.get_size()))
     # enemies = pygame.sprite.Group()
     # pygame.key.set_repeat(10)
     last_enemy_spawn = pygame.time.get_ticks()
-    score = 0
     
     while hero.sprite.alive and not done:
         keys = pygame.key.get_pressed()
@@ -125,19 +142,23 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
-        screen.fill(BGCOLOR)
+        # check to see if the hero is dead
+        if hero.sprite.health <= 0:
+            hero.sprite.alive = False
+            
+            
         
         process_keys(keys, hero)
         process_mouse(mouse, hero)
         
         # Enemy spawning process
         num_enemies = len(ranged_enemies) + len(melee_enemies)
-        if last_enemy_spawn < currentTime - 50 and num_enemies < MAX_ENEMIES:
+        if last_enemy_spawn < currentTime - SPAWN_SPEED_DELAY and num_enemies < MAX_ENEMIES:
             
             enemy_name = EnemyFactory.get_random()
 
             spawn_side = random.random()
-            pos = None
+            
             if spawn_side < 0.25:
                 pos = (0, random.randint(0, size[1]))
             elif spawn_side < 0.5:
@@ -155,30 +176,24 @@ def game_loop():
                 ranged_enemies.add(enemy)
 
             last_enemy_spawn = currentTime
+        # Draw the background
+        screen.blit(background, (0, 0))
         
         move_entities(hero, melee_enemies, ranged_enemies, clock.get_time()/10)
         render_entities(hero, melee_enemies, ranged_enemies)
         
-        # Health and score render
-
-        #TODO RENDER HEALTH AND SCORE
-
-        # for hp in range(hero.sprite.health):
-        #     screen.blit(healthRender, (15 + hp*35, 0))
-
-        score = hero.sprite.collected_coins
+        hero_health_text = font.render(f"Hero Health: {hero.sprite.health}", True, (225, 225, 225))
+        hero_score_text = font.render(f"Score: {hero.sprite.collected_coins}", True, (225, 225, 225))
         
-        scoreRender = scoreFont.render(str(score), True, pygame.Color('black'))
-        scoreRect = scoreRender.get_rect()
-        scoreRect.right = size[0] - 20
-        scoreRect.top = 20
-        screen.blit(scoreRender, scoreRect)
+        # display the hero health on the bottom of the screen
+        draw_centered_surface(screen, hero_health_text, screen.get_height() - hero_health_text.get_height())
+        draw_centered_surface(screen, hero_score_text, 0)
         
         pygame.display.flip()
         clock.tick(30)
 
-cProfile.run('game_loop()')
-
+#cProfile.run('game_loop()')
+game_loop()
 while not done:
     keys = pygame.key.get_pressed()
     mouse = pygame.mouse.get_pressed()
@@ -187,12 +202,11 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:       
-                # Enable key repeat for spacebar
-                key_repeat_enabled = True
-                last_key_event_time = pygame.time.get_ticks()
-    
+    # diplay the game over text press 'r' to restart
+    game_over_text = font.render("Game Over! Press 'r' to restart", True, (225, 0, 0))
+    # draw the game over text in the center of the screen
+    draw_centered_surface(screen, game_over_text, screen.get_height()/2 - game_over_text.get_height()/2)
+
     if keys[pygame.K_r]:
         game_loop()
 pygame.quit()

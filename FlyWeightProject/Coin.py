@@ -11,12 +11,22 @@ class CoinFactory():
     __coins = {
         1 : CoinFlyweight(1, 
                           pygame.transform.scale(pygame.image.load('./Images/coinImage.png'), 
-                                                 (7,7)))
+                                                 (7,7))),
+        3 : CoinFlyweight(1, 
+                          pygame.transform.scale(pygame.image.load('./Images/coinImage.png'), 
+                                                 (11,11))),
+        5 : CoinFlyweight(1, 
+                          pygame.transform.scale(pygame.image.load('./Images/coinImage.png'), 
+                                                 (15,15)))
         }
     
     @staticmethod
     def get(value: int):
         return CoinFactory.__coins.get(value)
+    
+    @staticmethod
+    def get_coin_sizes():
+        return list(CoinFactory.__coins.keys())
     
 class Coin(pygame.sprite.Sprite):
     def __init__(self, value: int, pos: tuple[float, float]):
@@ -35,3 +45,7 @@ class Coin(pygame.sprite.Sprite):
 
     def collide(self):
         self.kill()
+
+    @staticmethod
+    def get_coin_sizes():
+        return CoinFactory.get_coin_sizes()
